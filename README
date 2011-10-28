@@ -8,7 +8,7 @@ Either option is configurable.
 
 To install:
 1. Download and extract.
-2. Put the folder music-integration@brianrobles204 in ~/.local/share/gnome-shell/extensions/
+2. Put the folder '''music-integration@brianrobles204''' in '''~/.local/share/gnome-shell/extensions/'''
 3. As root, put org.gnome.shell.extensions.musicintegration.gschema.xml in /usr/share/glib-2.0/schemas/
 4. As root, in terminal, run: # glib-compile-schemas /usr/share/glib-2.0/schemas/
 5. Restart the shell (Alt+F2, enter r, press enter) or log out and in.
