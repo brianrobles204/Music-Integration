@@ -1,0 +1,9 @@
+Music Integration Extension
+Integrate your music with the Gnome Shell.
+
+This extension listens to Dbus MPRIS and automatically looks for players.
+It automatically adds an icon to the Gnome panel when it finds a music player; you have access to basic controls there.
+It will also notify you when the song changes, and you can also control the player through the notifications and message tray.
+
+This extension is a fork of Jean-Philippe Braun's extension (eon@patapon.info)
+Original: https://github.com/eonpatapon/gnome-shell-extensions-mediaplayer
