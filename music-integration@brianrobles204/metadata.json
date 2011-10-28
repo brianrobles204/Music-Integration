@@ -1,0 +1,13 @@
+{
+"uuid": "music-integration@brianrobles204",
+"name": "Music Integration",
+"description": "Integrate your music into Gnome Shell.",
+"original-author": "Brian Robles",
+"shell-version": [ "3.2" ],
+"players": [ "clementine", "mpd", "banshee", "rhythmbox", "rhythmbox3", "pragha", "quodlibet", "guayadeque", "amarok", "googlemusicframe", "xbmc", "pithos" ],
+"support_seek": [ "clementine", "banshee", "rhythmbox", "rhythmbox3", "quodlibet", "amarok" ],
+"locale": "/usr/share/locale",
+"path": "~/.local/share/gnome-shell/extensions/music-integration@brianrobles204",
+"url": "https://github.com/eonpatapon/gnome-shell-extensions-mediaplayer"
+}
+

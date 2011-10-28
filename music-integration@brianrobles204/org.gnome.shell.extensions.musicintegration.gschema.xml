@@ -1,0 +1,15 @@
+<schemalist>
+  <schema path="/org/gnome/shell/extensions/musicintegration/" id="org.gnome.shell.extensions.musicintegration"  gettext-domain="musicintegration">
+    <key name="setup" type='s'>
+      <default>'1'</default>
+      <summary>Default setup</summary>
+      <description>The default setup for music integration.</description>
+    </key>
+
+    <key name="notification" type='b'>
+      <default>true</default>
+      <summary>Notification</summary>
+      <description>Shows the notifications with controls.</description>
+    </key>
+  </schema>
+</schemalist>
