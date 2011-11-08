@@ -24,6 +24,7 @@ let coverpathpause = null;
 let coverpathplay = null;
 let preferences_path = null;
 let default_setup = "";
+let cover_overlay = true;
 let MusicEnabled = null;
 let MusicIndicators = []; 
 let MusicSources = []; 
@@ -281,12 +282,16 @@ CoverArt.prototype = {
         this._prop = new Prop(owner);
         this._cs = coversize;
         this._update = true;
-        this._overlay = support_seek.indexOf(this._name) == -1 ? false : overlay;
+        this._overlay = (support_seek.indexOf(this._name) !== -1 && cover_overlay) ? overlay : false;
         this._olh = 0.85;
 	    this._oldCover = "";
 
         //Actual Cover Art
         this.actor = new St.BoxLayout({vertical: true, style_class: styleprefix + 'track-cover-control'});
+        
+        this.boxCover = new St.BoxLayout({style_class: styleprefix + 'box-cover'});
+        this.actor.add_actor(this.boxCover);
+        
         this.trackCover = new St.Bin({style_class: styleprefix + 'track-cover', x_align: St.Align.MIDDLE});
         this.trackCoverMusic = new Clutter.Texture({
             width: this._cs, 
@@ -296,36 +301,37 @@ CoverArt.prototype = {
             filename: coverpathmusic
         })
         this.trackCover.set_child(this.trackCoverMusic);
-        this.actor.add_actor(this.trackCover);
+        this.boxCover.add_actor(this.trackCover);
+
+        //Hover Area - aka the whole cover
+        this._trackOverlay = new St.Button({style_class: 'track-overlay'});
+        this.boxCover.add_actor(this._trackOverlay);
+        this._trackOverlay.height = this._cs;
+        this._trackOverlay.width = this._cs;
+        this._trackOverlay.set_position(Math.floor(0), Math.floor(0));
+        this._trackOverlay.set_opacity(0);
+
+        //Pretty Play and Pause on the Cover
+        this._trackOPpap = new Clutter.Texture({width: this._cs, height: this._cs, keep_aspect_ratio: true, filter_quality: 1, filename: coverpathpause});
+        this.boxCover.add_actor(this._trackOPpap);
+        this._trackOPpap.set_position(Math.floor(0), Math.floor(0));
+        this._trackOPpap.set_opacity(0);
 
         if (this._overlay) {
-            //Hover Area - aka the whole cover
-            this._trackOverlay = new St.Button({style_class: 'track-overlay'});
-            this.actor.add_actor(this._trackOverlay);
-            this._trackOverlay.height = this._cs;
-            this._trackOverlay.width = this._cs;
-            this._trackOverlay.set_position(Math.floor(10), Math.floor(10));
-            this._trackOverlay.set_opacity(0);
-
-            //Pretty Play and Pause on the Cover
-            this._trackOPpap = new Clutter.Texture({width: this._cs, height: this._cs, keep_aspect_ratio: true, filter_quality: 1, filename: coverpathpause});
-            this.actor.add_actor(this._trackOPpap);
-            this._trackOPpap.set_position(Math.floor(10), Math.floor(10));
-            this._trackOPpap.set_opacity(0);
-
             //Track Background - the white area
             this._trackObg = new St.BoxLayout({vertical: true, style_class: 'track-overlay-bg'});
-            this.actor.add_actor(this._trackObg);
+            this.boxCover.add_actor(this._trackObg);
             this._trackObg.height = this._cs - (this._cs*this._olh);
             this._trackObg.width = this._cs;
-            this._trackObg.set_position(Math.floor(10), Math.floor(10 + (this._cs*this._olh)));
+            this._trackObg.set_position(Math.floor(0), Math.floor(this._cs*this._olh));
+            this._trackObg.set_opacity(0)
 
             //Track Timer - the black position bar
             this._trackOtimer = new St.BoxLayout({style_class: 'track-overlay-timer'});
             this._trackObg.add_actor(this._trackOtimer);
             this._trackOtimer.height = 2;
             this._trackOtimer.width = 0;
-            this._trackOtimer.set_position(Math.floor(0), Math.floor(this._cs - (this._cs*this._olh) )-2);
+            this._trackOtimer.set_position(Math.floor(0), Math.floor(this._cs) - Math.floor(this._cs*this._olh) - 2);
 
             //Track Time - the text displaying the time left
             this._trackOtime = new St.Label({text: "0:00 / 0:00", style_class: 'track-overlay-time'});
@@ -335,24 +341,27 @@ CoverArt.prototype = {
 
             this._trackOverlay.connect('notify::hover', 
                 Lang.bind(this, function () {this._onEnterOverlay(this._trackOverlay, this._trackObg); }));
-            this._trackOverlay.connect('clicked', 
-                Lang.bind(this, function () { this._coverClick(); }));
-            this._trackObg.set_opacity(0)
         }
+        
+        this._trackOverlay.connect('clicked', 
+            Lang.bind(this, function () { this._coverClick(); }));
 
+        this._status = "";
+        this._getStatus();
+        this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
+            if (value["PlaybackStatus"])
+                this._setStatus(iface, value["PlaybackStatus"]);
+        }));
+            
         if (this._overlay) {
             this._getMetadata();
             this._currentTime = 0;
             this._songLength = 0;
-            this._status = "";
             this._getPosition();
-            this._getStatus();
             this._updateTimer();
             this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
                 if (value["Metadata"]) 
                     this._setMetadata(iface, value["Metadata"]);
-                if (value["PlaybackStatus"])
-                    this._setStatus(iface, value["PlaybackStatus"]);
             }));
             this._mediaServerPlayer.connect('Seeked', Lang.bind(this, function(sender, value) {
                 this._getPosition();
@@ -404,8 +413,7 @@ CoverArt.prototype = {
                                  opacity: 0,
                                  transition: 'linear' });
         if (this._status == "Playing") this._trackOPpap.filename = coverpathpause;
-        else if (this._status == "Paused") this._trackOPpap.filename = coverpathplay;
-        else if (this._status == "Stopped") this._trackOPpap.filename = coverpathplay;
+        else this._trackOPpap.filename = coverpathplay;
     },
 
     _setPosition: function(sender, value) {
@@ -470,15 +478,11 @@ CoverArt.prototype = {
 
     _setStatus: function(sender, status) {
         this._status = status;
-        if (status == "Playing") {
-            this._runTimer();
-        }
-        else if (status == "Paused") {
-            this._pauseTimer(); 
-        }
-        else if (status == "Stopped") {
-            this._stopTimer();
-        }
+        if (this._overlay) {
+            if (status == "Playing") this._runTimer();
+            else if (status == "Paused") this._pauseTimer(); 
+            else this._stopTimer();
+	    }
     },
 
     _getStatus: function() {
@@ -696,71 +700,6 @@ MusicIntBox.prototype = {
 //*********************************
 //Indicator components and Objects
 //*********************************
-function IconImage() {
-    this._init.apply(this, arguments);
-}
-
-IconImage.prototype = {
-    _init: function(icon, image) {
-        if (icon && !image) {
-            this.actor = new St.Icon({
-                icon_type: St.IconType.SYMBOLIC,
-                icon_size: 12,
-                icon_name: icon
-            });
-        }
-        else if (image && !icon) {
-            this.actor = new Clutter.Texture({
-                height: 12, 
-                keep_aspect_ratio: true, 
-                filename: icon_path + image + ".svg"
-            });
-        }
-        else if (image && icon){
-            this.actor = new St.BoxLayout();
-            this._icon = new St.Icon({
-                icon_type: St.IconType.SYMBOLIC,
-                icon_size: 12,
-                icon_name: icon
-            });
-            this._img = new Clutter.Texture({
-                height: 12, 
-                keep_aspect_ratio: true, 
-                filename: icon_path + image + ".svg"
-            });
-            this.actor.add_actor(this._icon);
-            this.actor.add_actor(this._img);
-            this._img.set_position(3,0);
-        }
-        else {
-            this.actor = new Clutter.Texture({
-                height: 12, 
-                width: 12, 
-                keep_aspect_ratio: true, 
-                filename: coverpathmusic
-            });
-        }
-    },
-
-    setIcon: function(icon) {
-        this._imgicon.icon_name = icon;
-    },
-
-    setImage: function(image) {
-        this._imgicon.filename = icon_path + image + ".svg";
-    },
-
-    setIconImage: function(icon, image) {
-        this._icon.icon_name = icon;
-        this._img.filename = icon_path + image + ".svg";
-    },
-    
-    getActor: function() {
-        return this.actor;
-    }
-}
-
-
 function TextImageItem() {
     this._init.apply(this, arguments);
 }
@@ -768,11 +707,20 @@ function TextImageItem() {
 TextImageItem.prototype = {
     __proto__: PopupMenu.PopupBaseMenuItem.prototype,
 
-    _init: function(text, icon, image, params) {
+    _init: function(text, icon, image, iconsize, params) {
         PopupMenu.PopupBaseMenuItem.prototype._init.call(this, params);
 
-        this._imgicon = new IconImage(icon, image);
-        this.addActor(this._imgicon.getActor(), {span: 1});
+        this._imgicon = new St.BoxLayout();
+        if (icon) {
+            this._icon = new St.Icon({ icon_type: St.IconType.SYMBOLIC, icon_size: iconsize, icon_name: icon});
+            this._imgicon.add_actor(this._icon);
+		}
+		if (image) {
+            this._img = new Clutter.Texture({ height: iconsize, keep_aspect_ratio: true, filename: icon_path + image + ".svg"});
+            this._imgicon.add_actor(this._img);
+		}
+		if (icon && image) this._img.set_position(3,0);
+        this.addActor(this._imgicon, {span: 1});
 
         this._label = new St.Label({text: text, style_class: "label-class"});
         this.addActor(this._label, {span: 0});
@@ -783,16 +731,16 @@ TextImageItem.prototype = {
     },
 
     setIcon: function(icon) {
-        this._imgicon.setIcon(icon);
+        this._icon.icon_name = icon;
     },
 
     setImage: function(image) {
-        this._imgicon.setImage(image);
+        this._img.filename = icon_path + image + ".svg";
     },
 
-    setIconImage: function(icon, image) {
-        this._imgicon.setIconImage(icon, image);
-    }
+    setIconType: function (type) {
+		this._icon.icon_type = type;
+	}
 }
 
 function VolSliderItem() {
@@ -904,9 +852,10 @@ MusicMenu.prototype = {
         this._prop = new Prop(owner);
 
         //Player Title
-        this._playerTitle = new TextImageItem(this._getName(), "audio-x-generic",  "music-stopped", {style_class: "player-title", reactive: false});
+        this._playerTitle = new TextImageItem(this._getName(), this._name,  false, 16, {style_class: "player-title", reactive: false});
+        this._playerTitle.setIconType(St.IconType.FULLCOLOR);
         this.addMenuItem(this._playerTitle);
-
+        
         //Main Music Box
         this._mainMusicBox = new MusicIntBox(owner, 120, 26, true, "raise", "");
         this._mainMusicBox._infos.width = 300;
@@ -937,7 +886,7 @@ MusicMenu.prototype = {
 
         //Music Integration Preferences
         this.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        this._preferences = new TextImageItem("Music Integration Preferences", "system-run", false, {style_class: "system-preferences"});
+        this._preferences = new TextImageItem("Music Integration Preferences", "system-run", false, 12, {style_class: "system-preferences"});
         this._preferences.connect('activate', Lang.bind(this, function(item) {
             this._openPreferences();
         }));
@@ -1007,7 +956,7 @@ MusicMenu.prototype = {
 
     _setStatus: function(sender, status) {
         this._playerStatus = status;
-        this._playerTitle.setIconImage('audio-x-generic', "music-" + status.toLowerCase());
+        //this._playerTitle.setImage("music-" + status.toLowerCase());
         this._setName(status);
     },
 
@@ -1334,6 +1283,7 @@ function init(metadata) {
     
     this._schema = new Gio.Settings({ schema: 'org.gnome.shell.extensions.musicintegration' });
     default_setup = this._schema.get_string("setup");
+    cover_overlay = this._schema.get_boolean("overlay");
     
     //Start listening for music players to integrate.
     for (var p=0; p<compatible_players.length; p++) {
@@ -1346,10 +1296,13 @@ function init(metadata) {
     
     this._schema.connect('changed', Lang.bind(this, function(schema, key){
         if(key == "setup") default_setup = this._schema.get_string("setup");
+        if(key == "overlay") cover_overlay = this._schema.get_boolean("overlay");
+        global.log(cover_overlay);
         if (MusicEnabled) {
             disable(); enable();
 		}
 	}));
+	
 }
 
 function enable() {

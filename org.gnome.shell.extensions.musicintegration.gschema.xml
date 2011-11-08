@@ -11,5 +11,11 @@
       <summary>Notification</summary>
       <description>Shows the notifications with controls.</description>
     </key>
+
+    <key name="overlay" type='b'>
+      <default>true</default>
+      <summary>Cover Overlay</summary>
+      <description>Shows the cover overlay on mouseover.</description>
+    </key>
   </schema>
 </schemalist>
