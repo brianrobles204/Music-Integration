@@ -6,6 +6,7 @@ class App:
     BASE_KEY = "org.gnome.shell.extensions.musicintegration"
     def __init__(self):
 	settings = Gio.Settings.new(self.BASE_KEY)
+	nswitch = Gtk.Switch()
 
 	window = Gtk.Window()
         window.connect('destroy', lambda w: Gtk.main_quit())
@@ -46,10 +47,10 @@ class App:
         
 	hplayerbox.pack_start(player, False, True, 0)
         player.append_text('Choose a setup :')
-        player.append_text('Panel and Notifications')
-        player.append_text('Panel Indicator only')
+        player.append_text('Player as Indicator in Panel')
+        player.append_text('Player in Volume Menu')
         player.append_text('Notifications only')
-        player.connect('changed', self.keys_change, settings)
+        player.connect('changed', self.keys_change, settings, nswitch)
         player.set_active(int(settings.get_string("setup")))
         player.set_size_request(300, 0)
 
@@ -64,8 +65,8 @@ class App:
 	nlabel = Gtk.Label("Notifications")
 	nhbox.pack_start(nlabel, False, True, 0)
 	
-	nswitch = Gtk.Switch()
 	nswitch.set_active(settings.get_boolean("notification"))
+	nswitch.connect('notify::active', self.n_change, settings)
 	nhbox.pack_end(nswitch, False, True, 0)
 
 	
@@ -94,20 +95,28 @@ class App:
 	
 	quitalign = Gtk.Align(2)
 	quithbox.set_halign(quitalign)
-	print "hello world"
 
         window.show_all()
 
         return
 
-    def keys_change(self, player, settings):
+    def keys_change(self, player, settings, nswitch):
         index = player.get_active()
-        if index:
-		settings.set_string("setup", str(player.get_active()))
+        if index == 3:
+            nswitch.set_active(True)
+            nswitch.set_sensitive(False)
+        else:
+            nswitch.set_active(settings.get_boolean("notification"))
+            nswitch.set_sensitive(True)
+        settings.set_string("setup", str(player.get_active()))
         return
 
     def co_change(self, coswitch, value, settings):
         settings.set_boolean("overlay", coswitch.get_active())
+        return
+
+    def n_change(self, coswitch, value, settings):
+        settings.set_boolean("notification", coswitch.get_active())
         return
 
 def main():

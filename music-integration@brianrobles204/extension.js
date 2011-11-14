@@ -25,10 +25,13 @@ let coverpathplay = null;
 let preferences_path = null;
 let default_setup = "";
 let cover_overlay = true;
+let notification_option = true;
 let MusicEnabled = null;
+let MusicVolumeOption = null;
 let MusicIndicators = []; 
 let MusicSources = []; 
 let MusicNotifications = []; 
+let MusicVolumePlayers = [];
 let MusicPlayersList = [];
 
 
@@ -334,7 +337,7 @@ CoverArt.prototype = {
             this._trackOtimer.set_position(Math.floor(0), Math.floor(this._cs) - Math.floor(this._cs*this._olh) - 2);
 
             //Track Time - the text displaying the time left
-            this._trackOtime = new St.Label({text: "0:00 / 0:00", style_class: 'track-overlay-time'});
+            this._trackOtime = new St.Label({text: "0:00 / 0:00", style_class: styleprefix + 'track-overlay-time'});
             this._trackOtimeHolder = new St.Bin({x_align: St.Align.END});
             this._trackOtimeHolder.add_actor(this._trackOtime);
             this._trackObg.add_actor(this._trackOtimeHolder);
@@ -601,7 +604,7 @@ MusicIntBox.prototype = {
         this._trackInfoHolder.set_child(this._infos);
 
         //Buttons
-        this._raiseButton = new ControlButton('media-eject', 24,
+        this._raiseButton = new ControlButton('media-eject', Math.floor(buttonsize * 0.9),
             Lang.bind(this, function () { 
                 Main.overview.hide();
                 this._mediaServer.RaiseRemote(); 
@@ -623,7 +626,7 @@ MusicIntBox.prototype = {
         this._nextButton = new ControlButton('media-skip-forward', buttonsize,
             Lang.bind(this, function () { this._mediaServerPlayer.NextRemote(); }));
         this._spaceButtonTwo = new St.Bin({style_class: 'spaceb'});
-        this._settButton = new ControlButton('system-run', buttonsize - 2,
+        this._settButton = new ControlButton('system-run', Math.floor(buttonsize * 0.8),
             Lang.bind(this, function () { this._openPreferences(); }));
 
         this.controls = new St.BoxLayout();
@@ -720,10 +723,13 @@ TextImageItem.prototype = {
             this._imgicon.add_actor(this._img);
 		}
 		if (icon && image) this._img.set_position(3,0);
-        this.addActor(this._imgicon, {span: 1});
+		this._holder = new St.BoxLayout();
+        this._holder.add_actor(this._imgicon);
 
         this._label = new St.Label({text: text, style_class: "label-class"});
-        this.addActor(this._label, {span: 0});
+        this._holder.add_actor(this._label);
+        
+        this.addActor(this._holder, {span: 0});
     },
 
     setText: function(text) {
@@ -751,33 +757,22 @@ VolSliderItem.prototype = {
     __proto__: PopupMenu.PopupSliderMenuItem.prototype,
 
     _init: function(text, icon, style, value) {
-        PopupMenu.PopupBaseMenuItem.prototype._init.call(this);
+        PopupMenu.PopupSliderMenuItem.prototype._init.call(this, value);
+
+        this.removeActor(this._slider);
+        this._holder = new St.BoxLayout();
 
         this._icon = new St.Icon({
             icon_type: St.IconType.SYMBOLIC,
             icon_size: 12,
             icon_name: icon,
             style_class: 'icon-volume'});
-        this.addActor(this._icon, {span: 1});
+        this._holder.add_actor(this._icon);
 
         this._label = new St.Label({text: text, style_class: "label-class"});
-        this.addActor(this._label, {span: 1});
-
-        this.actor.connect('key-press-event', Lang.bind(this, this._onKeyPressEvent));
-
-        if (isNaN(value))
-            // Avoid spreading NaNs around
-            throw TypeError('The slider value must be a number');
-        this._value = Math.max(Math.min(value, 1), 0);
-
-        this._slider = new St.DrawingArea({ style_class: 'popup-slider-menu-item', reactive: true });
-        this.addActor(this._slider, { span: -1, expand: true });
-        this._slider.connect('repaint', Lang.bind(this, this._sliderRepaint));
-        this.actor.connect('button-press-event', Lang.bind(this, this._startDragging));
-        this.actor.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
-
-        this._releaseId = this._motionId = 0;
-        this._dragging = false;
+        this._holder.add_actor(this._label);
+        this.addActor(this._holder);
+        this.addActor(this._slider);
     },
 
     setIcon: function(icon) {
@@ -796,18 +791,21 @@ ToggleItem.prototype = {
     _init: function(text, icon, active, params) {
         PopupMenu.PopupBaseMenuItem.prototype._init.call(this, params);
 
+        this._holder = new St.BoxLayout();
+        this.addActor(this._holder);
+
         this._icon = new St.Icon({
             icon_type: St.IconType.SYMBOLIC,
             icon_size: 12,
             icon_name: icon});
         this._iconbox = new St.Bin();
         this._iconbox.add_actor(this._icon);
-        this.addActor(this._iconbox, {span: 1});
+        this._holder.add_actor(this._iconbox);
 
         this.label = new St.Label({ text: text, style_class: "label-class" });
+        this._holder.add_actor(this.label);
+        
         this._switch = new PopupMenu.Switch(active);
-
-        this.addActor(this.label, {span: 1});
         this.addActor(this._switch.actor, { span: -1, expand: false, align: St.Align.END });
 
         this.updateIcon();
@@ -862,7 +860,7 @@ MusicMenu.prototype = {
         this.addActor(this._mainMusicBox.getActor());
 
         //Volume
-        this._volume = new VolSliderItem("Volume", "audio-volume-high", "volume-slider", 0);
+        this._volume = new VolSliderItem("Music Volume", "audio-volume-high", "volume-slider", 0);
         this._volume.connect('value-changed', Lang.bind(this, function(item) {
             this._mediaServerPlayer.setVolume(item._value);
         }));
@@ -916,7 +914,7 @@ MusicMenu.prototype = {
     },
 
     _setName: function(status) {
-        this._playerTitle.setText(this._getName() + " - " + _(status));
+        this._playerTitle.setText(this._getName() + "  -  " + _(status));
     },
 
     _updateSwitches: function() {
@@ -1060,6 +1058,75 @@ MusicIndicator.prototype = {
 };
 
 
+//*********************************
+//Volume Menu components and objects
+//*********************************
+
+function VolumeMenuInt(owner) {
+    this._init(owner);
+};
+
+VolumeMenuInt.prototype = {
+    _init: function(owner) {
+        //DBus Stuff
+        this._owner = owner;
+        this._name = this._owner.split('.')[3];
+        this._mediaServerPlayer = new MediaServer2Player(owner);
+        this._mediaServer = new MediaServer2(owner);
+        this._prop = new Prop(owner);
+		while(Main.panel._statusArea['volume']) {
+            this.menu = Main.panel._statusArea['volume'];
+            break;
+        }
+        
+        //Separator
+        this._separator = new PopupMenu.PopupSeparatorMenuItem();
+        this.menu.menu.addMenuItem(this._separator, this.menu.menu.numMenuItems - 3);
+        
+        //Player Title
+        this._playerTitle = new TextImageItem(this._getName(), this._name,  false, 16, {style_class: "player-title", reactive: false});
+        this._playerTitle.setIconType(St.IconType.FULLCOLOR);
+        this.menu.menu.addMenuItem(this._playerTitle, this.menu.menu.numMenuItems - 3);
+        
+        //Main Music Box
+        this._mainMusicMenu = new PopupMenu.PopupBaseMenuItem({reactive: false, style_class: "v-main-music-menu"});
+        this._mainMusicBox = new MusicIntBox(owner, 90, 20, true, "raise", "v-");
+        this._mainMusicBox._infos.width = 250;
+        this._mainMusicMenu.addActor(this._mainMusicBox.getActor());
+        this.menu.menu.addMenuItem(this._mainMusicMenu, this.menu.menu.numMenuItems - 3);
+
+        //Update and start listening
+        this._getStatus();
+
+        this._propchange = this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
+            if (value["PlaybackStatus"])
+                this._setStatus(iface, value["PlaybackStatus"]);
+        }));
+	},
+
+    _getName: function() {
+        return this._name.charAt(0).toUpperCase() + this._name.slice(1);
+    },
+
+    _setStatus: function(sender, status) {
+        this._playerTitle.setText(this._getName() + "  -  " + status);
+    },
+
+    _getStatus: function() {
+        this._mediaServerPlayer.getPlaybackStatus(Lang.bind(this,
+            this._setStatus
+        ));
+    },
+    
+    destroy: function() {
+		this._separator.destroy();
+		this._playerTitle.destroy();
+		this._mainMusicMenu.destroy();
+	}
+}
+ 
+ 
+ 
 //*********************************
 //Notification components and objects
 //*********************************
@@ -1231,7 +1298,7 @@ MusicSource.prototype = {
         this._prop.disconnect(this._propchange);
     }
 }
-
+/*
 
 //*********************************
 //Player Functions: when a player is added, or removed
@@ -1241,6 +1308,7 @@ function addPlayer(owner) {
     p = compatible_players.indexOf(owner.split('.')[3])
     
 	MusicPlayersList[p] = true;
+	new VolumeMenuInt(owner);
 	if(default_setup == 1 || default_setup == 2) MusicIndicators[p] = new MusicIndicator(owner, p);
     if(default_setup == 1 || default_setup == 3) {
 		MusicSources[p] = new MusicSource(owner, p);
@@ -1336,6 +1404,125 @@ function disable() {
 	    if (MusicSources[p]) MusicSources[p].destroy();
 		if (MusicNotifications[p]) MusicNotifications[p].destroy();
     }
+}*/
+
+function MusicIntegrationMain(metadata) {
+    this._init(metadata);
+};
+
+MusicIntegrationMain.prototype = {
+    _init: function(metadata) {
+        MusicEnabled = false;
+        icon_path = metadata.path + '/icons/';
+        coverpathmusic = metadata.path + '/music.png';
+        coverpathpause = metadata.path + '/pause.png';
+        coverpathplay = metadata.path + '/play.png';
+        preferences_path = metadata.path + '/music-int-pref.py';
+        compatible_players = metadata.players;
+        support_seek = metadata.support_seek;
+    
+        this._schema = new Gio.Settings({ schema: 'org.gnome.shell.extensions.musicintegration' });
+        default_setup = this._schema.get_string("setup");
+        cover_overlay = this._schema.get_boolean("overlay");
+        notification_option = this._schema.get_boolean("notification");
+    
+        //Start listening for music players to integrate.
+        for (var p=0; p<compatible_players.length; p++) {
+		    //MusicPlayersList[p] = false;
+            DBus.session.watch_name('org.mpris.MediaPlayer2.'+compatible_players[p], false,
+                Lang.bind(this, this.addPlayer),
+                Lang.bind(this, this.removePlayer)
+            );
+        }
+    
+        this._schema.connect('changed', Lang.bind(this, function(schema, key){
+            if(key == "setup") default_setup = this._schema.get_string("setup");
+            if(key == "overlay") cover_overlay = this._schema.get_boolean("overlay");
+            if(key == "notification") notification_option = this._schema.get_boolean("notification");
+            if (MusicEnabled) {
+                this.disable(); this.enable();
+		    }
+	    }));
+	},
+	
+	enable: function() {
+        MusicEnabled = true;
+        for (var p=0; p<compatible_players.length; p++) {
+		    owner = 'org.mpris.MediaPlayer2.'+compatible_players[p];
+		    if (MusicPlayersList[p]) this.buildPlayer(owner);
+		}
+	},
+	
+	disable: function() {
+        MusicEnabled = false;
+        for (var p=0; p<compatible_players.length; p++) {
+		    owner = 'org.mpris.MediaPlayer2.'+compatible_players[p];
+		    this.destroyPlayer(owner);
+		}
+	},
+	
+	addPlayer: function(owner) {
+        p = compatible_players.indexOf(owner.split('.')[3])
+		MusicPlayersList[p] = true;
+		if (MusicEnabled) this.buildPlayer(owner);
+	},
+	
+	removePlayer: function(owner) {
+        p = compatible_players.indexOf(owner.split('.')[3])
+		delete MusicPlayersList[p];
+		this.destroyPlayer(owner);
+	},
+	
+	buildVolumeOption: function() {
+		while(Main.panel._statusArea['volume']) {
+            this.volmenu = Main.panel._statusArea['volume'];
+            break;
+        }
+		MusicVolumeOption = new PopupMenu.PopupMenuItem("Music Integration Preferences");
+        this.volmenu.menu.addMenuItem(MusicVolumeOption, this.volmenu.menu.numMenuItems - 1);
+        MusicVolumeOption.connect('activate', Lang.bind(this, function() {
+            Main.overview.hide();
+            Util.spawn([preferences_path]);
+		}));
+	},
+	
+	buildPlayer: function(owner) {
+        let _children = Main.panel._rightBox.get_children();
+        p = compatible_players.indexOf(owner.split('.')[3])
+	    if(default_setup == 1) {
+			MusicIndicators[p] = new MusicIndicator(owner, p);
+	        Main.panel._rightBox.insert_actor(MusicIndicators[p].getActor(), _children.length - 1);
+	        Main.panel._menus.addMenu(MusicIndicators[p].getMenu());
+		}
+	    if(default_setup == 2) {
+			MusicVolumePlayers[p] = new VolumeMenuInt(owner);
+			if (!MusicVolumeOption) this.buildVolumeOption();
+		}
+        if(notification_option) {
+	    	MusicSources[p] = new MusicSource(owner, p);
+            MusicNotifications[p] = new MusicNotification(MusicSources[p], owner, null, null, {
+                customContent : true
+            });
+            MusicSources[p].pushNotification(MusicNotifications[p]);
+            Main.messageTray.add(MusicSources[p]);
+	    }
+	},
+	
+	destroyPlayer: function(owner) {
+		p = compatible_players.indexOf(owner.split('.')[3])
+		if (MusicIndicators[p]) MusicIndicators[p].destroy();
+	    if (MusicSources[p]) MusicSources[p].destroy();
+		if (MusicNotifications[p]) MusicNotifications[p].destroy();
+		if (MusicVolumePlayers[p]) MusicVolumePlayers[p].destroy();
+		if (Object.keys(MusicPlayersList).length == 0 && MusicVolumeOption || !MusicEnabled && MusicVolumeOption) {
+			MusicVolumeOption.destroy();
+			MusicVolumeOption = null;
+		}
+	}
+};
+
+function init(metadata) {
+	return new MusicIntegrationMain(metadata);
 }
 
 
