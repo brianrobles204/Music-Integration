@@ -2,9 +2,10 @@
 Integrate your music with the Gnome Shell.
 
 This extension listens to Dbus MPRIS and automatically looks for players. It then adds an icon to the 
-Gnome panel when it finds a music player; you have access to basic controls there.It also notifies you 
+Gnome panel when it finds a music player; you have access to basic controls there. It also notifies you 
 when the song changes, and you can also control the player through the notifications and message tray too.
-Options are configurable.
+You also have an option to integrate the player into the volume menu, much like in Ubuntu's setup.
+All these options are configurable.
 
 
 ### Screenshot
