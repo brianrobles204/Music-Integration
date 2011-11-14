@@ -1079,6 +1079,7 @@ VolumeMenuInt.prototype = {
             this.menu = Main.panel._statusArea['volume'];
             break;
         }
+        this._pcount = compatible_players.indexOf(this._name)
         
         //Separator
         this._separator = new PopupMenu.PopupSeparatorMenuItem();
@@ -1094,14 +1095,28 @@ VolumeMenuInt.prototype = {
         this._playerTitle.add_actor(this._label);
         
 		this._box = new St.BoxLayout({vertical: true});
-        this._mainMusicBox = new MusicIntBox(owner, 90, 20, true, "raise", "v-");
+        this._mainMusicBox = new MusicIntBox(owner, 90, 20, true, false, "v-");
         this._mainMusicBox._infos.width = 250;
         
         this._box.add_actor(this._playerTitle);
         this._box.add_actor(this._mainMusicBox.getActor());
         this._mainMusicMenu.addActor(this._box);
+        this._mainMusicMenu.connect('activate', Lang.bind(this, function() {
+                Main.overview.hide();
+                this._mediaServer.RaiseRemote(); 
+                windows = global.get_window_actors();
+                for (w = 0; w<windows.length; w++) {
+					windowm = windows[w].get_meta_window()
+					appm = windowm.get_wm_class().toLowerCase();
+					if (appm == this._name) {
+						Main.activateWindow(windowm);
+						break;
+					}
+				}
+		}));
         
         this.menu.menu.addMenuItem(this._mainMusicMenu, this.menu.menu.numMenuItems - 3);
+        this.menu.menu.connect('open-state-changed', Lang.bind(this, this._extraOpenStateChanged));
 
         //Update and start listening
         this._getStatus();
@@ -1110,6 +1125,11 @@ VolumeMenuInt.prototype = {
             if (value["PlaybackStatus"])
                 this._setStatus(iface, value["PlaybackStatus"]);
         }));
+	},
+	
+	_extraOpenStateChanged: function(menu, open) {
+        this._mainMusicBox._trackCoverArt._setUpdate(open);
+        if(MusicSources[this._pcount]) MusicSources[this._pcount]._setUpdate(!open);
 	},
 
     _getName: function() {
