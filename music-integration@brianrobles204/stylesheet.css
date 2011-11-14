@@ -89,6 +89,9 @@
 .v-track-overlay-time{
     font-size: 8px;
 }
+.v-player-title{
+    padding: 3px 0px 7px 0px;
+}
 
 
 /****Control Buttons****/

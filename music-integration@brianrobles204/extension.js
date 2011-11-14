@@ -285,6 +285,7 @@ CoverArt.prototype = {
         this._prop = new Prop(owner);
         this._cs = coversize;
         this._update = true;
+        this._hovering = false;
         this._overlay = (support_seek.indexOf(this._name) !== -1 && cover_overlay) ? overlay : false;
         this._olh = 0.85;
 	    this._oldCover = "";
@@ -319,7 +320,7 @@ CoverArt.prototype = {
         this.boxCover.add_actor(this._trackOPpap);
         this._trackOPpap.set_position(Math.floor(0), Math.floor(0));
         this._trackOPpap.set_opacity(0);
-
+        
         if (this._overlay) {
             //Track Background - the white area
             this._trackObg = new St.BoxLayout({vertical: true, style_class: 'track-overlay-bg'});
@@ -328,14 +329,14 @@ CoverArt.prototype = {
             this._trackObg.width = this._cs;
             this._trackObg.set_position(Math.floor(0), Math.floor(this._cs*this._olh));
             this._trackObg.set_opacity(0)
-
+            
             //Track Timer - the black position bar
             this._trackOtimer = new St.BoxLayout({style_class: 'track-overlay-timer'});
             this._trackObg.add_actor(this._trackOtimer);
             this._trackOtimer.height = 2;
             this._trackOtimer.width = 0;
             this._trackOtimer.set_position(Math.floor(0), Math.floor(this._cs) - Math.floor(this._cs*this._olh) - 2);
-
+            
             //Track Time - the text displaying the time left
             this._trackOtime = new St.Label({text: "0:00 / 0:00", style_class: styleprefix + 'track-overlay-time'});
             this._trackOtimeHolder = new St.Bin({x_align: St.Align.END});
@@ -382,16 +383,20 @@ CoverArt.prototype = {
 
     _onEnterOverlay: function(hoverp, obj) {
         if (hoverp.hover) {
+			this._hovering = true;
             Mainloop.source_remove(this._fadeoverlay);
             Tweener.addTween(obj, { time: 0.2,
                                     opacity: 255,
                                     transition: 'linear' });
+            this._getPosition();
         }
         else {
             this._fadeoverlay = Mainloop.timeout_add(750, Lang.bind(this, function () {
+			    this._hovering = false;
                 Tweener.addTween(obj, { time: 0.2,
                                         opacity: 0,
                                         transition: 'linear' });
+                this._pauseTimer();
             }));
         }
     },
@@ -482,7 +487,7 @@ CoverArt.prototype = {
     _setStatus: function(sender, status) {
         this._status = status;
         if (this._overlay) {
-            if (status == "Playing") this._runTimer();
+            if (status == "Playing") this._getPosition();
             else if (status == "Paused") this._pauseTimer(); 
             else this._stopTimer();
 	    }
@@ -494,25 +499,21 @@ CoverArt.prototype = {
         ));
     },
 
-    _updateRate: function() {
-        this._mediaServerPlayer.getRate(Lang.bind(this, function(sender, rate) {
-            this._rate = rate;
-        }));
-    },
-
     _updateTimer: function() {
-        this._trackOtime.text = (this._formatTime(this._currentTime) + " / " + this._formatTime(this._songLength));
-        var currentSongTime = Math.floor(this._currentTime) / Math.floor(this._songLength);
-        if (currentSongTime >= 1) 
-            this._trackOtimer.width = this._cs;
-        else if (this._currentTime > 0)
-            this._trackOtimer.width = currentSongTime * this._cs;
-        else
-            this._trackOtimer.width = 0;
+        if (this._hovering) {
+			this._trackOtime.text = (this._formatTime(this._currentTime) + " / " + this._formatTime(this._songLength));
+            var currentSongTime = Math.floor(this._currentTime) / Math.floor(this._songLength);
+            if (currentSongTime >= 1) 
+                this._trackOtimer.width = this._cs;
+            else if (this._currentTime > 0)
+                this._trackOtimer.width = currentSongTime * this._cs;
+            else
+                this._trackOtimer.width = 0;
+		}
     },
 
     _runTimer: function() {
-        if (!Tweener.resumeTweens(this) && this._status == "Playing") {
+        if (!Tweener.resumeTweens(this) && this._status == "Playing" && this._hovering) {
             Tweener.addTween(this,
                 { _currentTime: this._songLength, 
                   time: this._songLength - this._currentTime,
@@ -1083,16 +1084,23 @@ VolumeMenuInt.prototype = {
         this._separator = new PopupMenu.PopupSeparatorMenuItem();
         this.menu.menu.addMenuItem(this._separator, this.menu.menu.numMenuItems - 3);
         
-        //Player Title
-        this._playerTitle = new TextImageItem(this._getName(), this._name,  false, 16, {style_class: "player-title", reactive: false});
-        this._playerTitle.setIconType(St.IconType.FULLCOLOR);
-        this.menu.menu.addMenuItem(this._playerTitle, this.menu.menu.numMenuItems - 3);
+        //Main Music Menu
+        this._mainMusicMenu = new PopupMenu.PopupBaseMenuItem();
         
-        //Main Music Box
-        this._mainMusicMenu = new PopupMenu.PopupBaseMenuItem({reactive: false, style_class: "v-main-music-menu"});
+        this._playerTitle = new St.BoxLayout({style_class: 'v-player-title'});
+        this._icon = new St.Icon({ icon_type: St.IconType.FULLCOLOR, icon_size: 16, icon_name: this._name});
+        this._label = new St.Label({text: this._getName(), style_class: "label-class"});
+        this._playerTitle.add_actor(this._icon);
+        this._playerTitle.add_actor(this._label);
+        
+		this._box = new St.BoxLayout({vertical: true});
         this._mainMusicBox = new MusicIntBox(owner, 90, 20, true, "raise", "v-");
         this._mainMusicBox._infos.width = 250;
-        this._mainMusicMenu.addActor(this._mainMusicBox.getActor());
+        
+        this._box.add_actor(this._playerTitle);
+        this._box.add_actor(this._mainMusicBox.getActor());
+        this._mainMusicMenu.addActor(this._box);
+        
         this.menu.menu.addMenuItem(this._mainMusicMenu, this.menu.menu.numMenuItems - 3);
 
         //Update and start listening
@@ -1298,119 +1306,16 @@ MusicSource.prototype = {
         this._prop.disconnect(this._propchange);
     }
 }
-/*
-
-//*********************************
-//Player Functions: when a player is added, or removed
-//*********************************
-function addPlayer(owner) {
-    let _children = Main.panel._rightBox.get_children();
-    p = compatible_players.indexOf(owner.split('.')[3])
-    
-	MusicPlayersList[p] = true;
-	new VolumeMenuInt(owner);
-	if(default_setup == 1 || default_setup == 2) MusicIndicators[p] = new MusicIndicator(owner, p);
-    if(default_setup == 1 || default_setup == 3) {
-		MusicSources[p] = new MusicSource(owner, p);
-        MusicNotifications[p] = new MusicNotification(MusicSources[p], owner, null, null, {
-            customContent : true
-        });
-        MusicSources[p].pushNotification(MusicNotifications[p]);
-	}
-    
-    if (MusicEnabled) {
-	    if(default_setup == 1 || default_setup == 3) Main.messageTray.add(MusicSources[p]);
-	    if(default_setup == 1 || default_setup == 2) {
-			Main.panel._rightBox.insert_actor(MusicIndicators[p].getActor(), _children.length - 1);
-	        Main.panel._menus.addMenu(MusicIndicators[p].getMenu());
-	    }
-	}
-}
-function removePlayer(owner) {
-    p = compatible_players.indexOf(owner.split('.')[3])
-    
-	MusicPlayersList[p] = false;
-    if (MusicIndicators[p]) MusicIndicators[p].destroy();
-    if (MusicSources[p]) MusicSources[p].destroy();
-    if (MusicNotifications[p]) MusicNotifications[p].destroy();
-}
 
 
 //*********************************
-//Core functions: init, enable, disable
+//Core Object: the Music Integration Extension
 //*********************************
-function init(metadata) {
-    MusicEnabled = false;
-    icon_path = metadata.path + '/icons/';
-    coverpathmusic = metadata.path + '/music.png';
-    coverpathpause = metadata.path + '/pause.png';
-    coverpathplay = metadata.path + '/play.png';
-    preferences_path = metadata.path + '/music-int-pref.py';
-    compatible_players = metadata.players;
-    support_seek = metadata.support_seek;
-    
-    this._schema = new Gio.Settings({ schema: 'org.gnome.shell.extensions.musicintegration' });
-    default_setup = this._schema.get_string("setup");
-    cover_overlay = this._schema.get_boolean("overlay");
-    
-    //Start listening for music players to integrate.
-    for (var p=0; p<compatible_players.length; p++) {
-		MusicPlayersList[p] = false;
-        DBus.session.watch_name('org.mpris.MediaPlayer2.'+compatible_players[p], false,
-            Lang.bind(this, addPlayer),
-            Lang.bind(this, removePlayer)
-        );
-    }
-    
-    this._schema.connect('changed', Lang.bind(this, function(schema, key){
-        if(key == "setup") default_setup = this._schema.get_string("setup");
-        if(key == "overlay") cover_overlay = this._schema.get_boolean("overlay");
-        global.log(cover_overlay);
-        if (MusicEnabled) {
-            disable(); enable();
-		}
-	}));
-	
-}
-
-function enable() {
-    MusicEnabled = true;
-    _children = Main.panel._rightBox.get_children();
-    for (var p=0; p<compatible_players.length; p++) {
-		owner = 'org.mpris.MediaPlayer2.'+compatible_players[p];
-        if(MusicPlayersList[p]) {
-			if(default_setup == 1 || default_setup == 2) {
-				MusicIndicators[p] = new MusicIndicator(owner, p);
-		        Main.panel._rightBox.insert_actor(MusicIndicators[p].getActor(), _children.length - 1);
-			    Main.panel._menus.addMenu(MusicIndicators[p].getMenu());
-			}
-			
-            if(default_setup == 1 || default_setup == 3) {
-                MusicSources[p] = new MusicSource(owner, p);
-                Main.messageTray.add(MusicSources[p]);
-                MusicNotifications[p] = new MusicNotification(MusicSources[p], owner, null, null, {
-                    customContent : true
-                });
-                MusicSources[p].pushNotification(MusicNotifications[p]);
-		    }
-		}
-    }
-}
-
-function disable() {
-    MusicEnabled = false;
-    for (var p=0; p<compatible_players.length; p++) {
-		if (MusicIndicators[p]) MusicIndicators[p].destroy();
-	    if (MusicSources[p]) MusicSources[p].destroy();
-		if (MusicNotifications[p]) MusicNotifications[p].destroy();
-    }
-}*/
-
-function MusicIntegrationMain(metadata) {
+function MusicIntegrationExtension(metadata) {
     this._init(metadata);
 };
 
-MusicIntegrationMain.prototype = {
+MusicIntegrationExtension.prototype = {
     _init: function(metadata) {
         MusicEnabled = false;
         icon_path = metadata.path + '/icons/';
@@ -1420,6 +1325,7 @@ MusicIntegrationMain.prototype = {
         preferences_path = metadata.path + '/music-int-pref.py';
         compatible_players = metadata.players;
         support_seek = metadata.support_seek;
+        this.nameWatcher = [];
     
         this._schema = new Gio.Settings({ schema: 'org.gnome.shell.extensions.musicintegration' });
         default_setup = this._schema.get_string("setup");
@@ -1428,12 +1334,15 @@ MusicIntegrationMain.prototype = {
     
         //Start listening for music players to integrate.
         for (var p=0; p<compatible_players.length; p++) {
-		    //MusicPlayersList[p] = false;
-            DBus.session.watch_name('org.mpris.MediaPlayer2.'+compatible_players[p], false,
+            this.nameWatcher[p] = DBus.session.watch_name('org.mpris.MediaPlayer2.'+compatible_players[p], null,
                 Lang.bind(this, this.addPlayer),
                 Lang.bind(this, this.removePlayer)
             );
         }
+        
+        //DBus.session.release_name_by_id('org.mpris.MediaPlayer2.banshee')
+        
+        //DBus.session.release_name_by_id(this.nameWatcher[2]);
     
         this._schema.connect('changed', Lang.bind(this, function(schema, key){
             if(key == "setup") default_setup = this._schema.get_string("setup");
@@ -1462,6 +1371,7 @@ MusicIntegrationMain.prototype = {
 	},
 	
 	addPlayer: function(owner) {
+		global.log(owner);
         p = compatible_players.indexOf(owner.split('.')[3])
 		MusicPlayersList[p] = true;
 		if (MusicEnabled) this.buildPlayer(owner);
@@ -1522,7 +1432,7 @@ MusicIntegrationMain.prototype = {
 };
 
 function init(metadata) {
-	return new MusicIntegrationMain(metadata);
+	return new MusicIntegrationExtension(metadata);
 }
 
 
