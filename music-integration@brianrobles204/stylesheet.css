@@ -55,6 +55,9 @@
 .label-class{
     padding-left: 20px;
 }
+.track-overlay-time{
+    padding-top: 1px;
+}
 
 
 /****Notifications****/
@@ -91,6 +94,9 @@
 }
 .v-player-title{
     padding: 3px 0px 7px 0px;
+}
+.v-track-overlay-time{
+    font-size: 9px;
 }
 
 

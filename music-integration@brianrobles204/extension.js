@@ -773,7 +773,7 @@ VolSliderItem.prototype = {
         this._label = new St.Label({text: text, style_class: "label-class"});
         this._holder.add_actor(this._label);
         this.addActor(this._holder);
-        this.addActor(this._slider);
+        this.addActor(this._slider, { span: -1, expand: false, align: St.Align.END });
     },
 
     setIcon: function(icon) {
@@ -978,7 +978,7 @@ function MusicIndicator() {
 MusicIndicator.prototype = {
     __proto__: PanelMenu.SystemStatusButton.prototype,
 
-    _init: function(owner, p) {
+    _init: function(owner) {
         PanelMenu.SystemStatusButton.prototype._init.call(this, 'audio-x-generic', null);
 
         //DBus stuff
@@ -987,7 +987,6 @@ MusicIndicator.prototype = {
         this._mediaServerPlayer = new MediaServer2Player(owner);
         this._mediaServer = new MediaServer2(owner);
         this._prop = new Prop(owner);
-        this._pcount = p;
 
         //Icon in Panel
         this._newIconActor = new St.BoxLayout();
@@ -1036,7 +1035,7 @@ MusicIndicator.prototype = {
         if (open) this.actor.add_style_pseudo_class('active');
         else this.actor.remove_style_pseudo_class('active');
         this._player._setCoverUpdate(open);
-        if(MusicSources[this._pcount]) MusicSources[this._pcount]._setUpdate(!open);
+        if(MusicSources[this._owner]) MusicSources[this._owner]._setUpdate(!open);
     },
     
     getActor: function() {
@@ -1079,7 +1078,6 @@ VolumeMenuInt.prototype = {
             this.menu = Main.panel._statusArea['volume'];
             break;
         }
-        this._pcount = compatible_players.indexOf(this._name)
         
         //Separator
         this._separator = new PopupMenu.PopupSeparatorMenuItem();
@@ -1129,7 +1127,7 @@ VolumeMenuInt.prototype = {
 	
 	_extraOpenStateChanged: function(menu, open) {
         this._mainMusicBox._trackCoverArt._setUpdate(open);
-        if(MusicSources[this._pcount]) MusicSources[this._pcount]._setUpdate(!open);
+        if(MusicSources[this._owner]) MusicSources[this._owner]._setUpdate(!open);
 	},
 
     _getName: function() {
@@ -1217,7 +1215,7 @@ function MusicSource() {
 MusicSource.prototype = {
     __proto__:  MessageTray.Source.prototype,
 
-    _init: function(owner, p) { 
+    _init: function(owner) { 
 
         //DBus Stuff
         this._owner = owner;
@@ -1229,7 +1227,6 @@ MusicSource.prototype = {
         MessageTray.Source.prototype._init.call(this, this._getName() + " Integration");
         this._setSummaryIcon(this.createMusicIcon());
 
-        this._pcount = p;
         this._update = true;
         this._focusnotify = true;
         this._songIcon = new St.Bin({style_class: 'song-icon'});
@@ -1254,7 +1251,7 @@ MusicSource.prototype = {
             }
 	        if (value["Metadata"] && this._update) {
                 this._setMetadata(iface, value["Metadata"]);
-                if (this._focusnotify) this.notify(MusicNotifications[this._pcount]);
+                if (this._focusnotify) this.notify(MusicNotifications[this._owner]);
             }
         }));
         
@@ -1273,7 +1270,7 @@ MusicSource.prototype = {
             else album = "Album";
         if (metadata["xesam:title"]) title = metadata["xesam:title"].toString();
             else title = "Title";
-        MusicNotifications[this._pcount].update(title,  "by " + artist + " from " + album, {
+        MusicNotifications[this._owner].update(title,  "by " + artist + " from " + album, {
             customContent : true
         });
         
@@ -1300,7 +1297,7 @@ MusicSource.prototype = {
     _setUpdate: function(update) {
         this._update = update;
         if(update) this._getMetadata();
-        MusicNotifications[this._pcount]._setCoverUpdate(update);
+        MusicNotifications[this._owner]._setCoverUpdate(update);
     },
 
     createMusicIcon: function() {
@@ -1354,15 +1351,11 @@ MusicIntegrationExtension.prototype = {
     
         //Start listening for music players to integrate.
         for (var p=0; p<compatible_players.length; p++) {
-            this.nameWatcher[p] = DBus.session.watch_name('org.mpris.MediaPlayer2.'+compatible_players[p], null,
+            DBus.session.watch_name('org.mpris.MediaPlayer2.'+compatible_players[p], null,
                 Lang.bind(this, this.addPlayer),
                 Lang.bind(this, this.removePlayer)
             );
         }
-        
-        //DBus.session.release_name_by_id('org.mpris.MediaPlayer2.banshee')
-        
-        //DBus.session.release_name_by_id(this.nameWatcher[2]);
     
         this._schema.connect('changed', Lang.bind(this, function(schema, key){
             if(key == "setup") default_setup = this._schema.get_string("setup");
@@ -1378,7 +1371,7 @@ MusicIntegrationExtension.prototype = {
         MusicEnabled = true;
         for (var p=0; p<compatible_players.length; p++) {
 		    owner = 'org.mpris.MediaPlayer2.'+compatible_players[p];
-		    if (MusicPlayersList[p]) this.buildPlayer(owner);
+		    if (MusicPlayersList[owner]) this.buildPlayer(owner);
 		}
 	},
 	
@@ -1391,15 +1384,12 @@ MusicIntegrationExtension.prototype = {
 	},
 	
 	addPlayer: function(owner) {
-		global.log(owner);
-        p = compatible_players.indexOf(owner.split('.')[3])
-		MusicPlayersList[p] = true;
+		MusicPlayersList[owner] = true;
 		if (MusicEnabled) this.buildPlayer(owner);
 	},
 	
 	removePlayer: function(owner) {
-        p = compatible_players.indexOf(owner.split('.')[3])
-		delete MusicPlayersList[p];
+		delete MusicPlayersList[owner];
 		this.destroyPlayer(owner);
 	},
 	
@@ -1418,32 +1408,30 @@ MusicIntegrationExtension.prototype = {
 	
 	buildPlayer: function(owner) {
         let _children = Main.panel._rightBox.get_children();
-        p = compatible_players.indexOf(owner.split('.')[3])
 	    if(default_setup == 1) {
-			MusicIndicators[p] = new MusicIndicator(owner, p);
-	        Main.panel._rightBox.insert_actor(MusicIndicators[p].getActor(), _children.length - 1);
-	        Main.panel._menus.addMenu(MusicIndicators[p].getMenu());
+			MusicIndicators[owner] = new MusicIndicator(owner);
+	        Main.panel._rightBox.insert_actor(MusicIndicators[owner].getActor(), _children.length - 1);
+	        Main.panel._menus.addMenu(MusicIndicators[owner].getMenu());
 		}
 	    if(default_setup == 2) {
-			MusicVolumePlayers[p] = new VolumeMenuInt(owner);
+			MusicVolumePlayers[owner] = new VolumeMenuInt(owner);
 			if (!MusicVolumeOption) this.buildVolumeOption();
 		}
         if(notification_option) {
-	    	MusicSources[p] = new MusicSource(owner, p);
-            MusicNotifications[p] = new MusicNotification(MusicSources[p], owner, null, null, {
+	    	MusicSources[owner] = new MusicSource(owner);
+            MusicNotifications[owner] = new MusicNotification(MusicSources[owner], owner, null, null, {
                 customContent : true
             });
-            MusicSources[p].pushNotification(MusicNotifications[p]);
-            Main.messageTray.add(MusicSources[p]);
+            MusicSources[owner].pushNotification(MusicNotifications[owner]);
+            Main.messageTray.add(MusicSources[owner]);
 	    }
 	},
 	
 	destroyPlayer: function(owner) {
-		p = compatible_players.indexOf(owner.split('.')[3])
-		if (MusicIndicators[p]) MusicIndicators[p].destroy();
-	    if (MusicSources[p]) MusicSources[p].destroy();
-		if (MusicNotifications[p]) MusicNotifications[p].destroy();
-		if (MusicVolumePlayers[p]) MusicVolumePlayers[p].destroy();
+		if (MusicIndicators[owner]) MusicIndicators[owner].destroy();
+	    if (MusicSources[owner]) MusicSources[owner].destroy();
+		if (MusicNotifications[owner]) MusicNotifications[owner].destroy();
+		if (MusicVolumePlayers[owner]) MusicVolumePlayers[owner].destroy();
 		if (Object.keys(MusicPlayersList).length == 0 && MusicVolumeOption || !MusicEnabled && MusicVolumeOption) {
 			MusicVolumeOption.destroy();
 			MusicVolumeOption = null;
