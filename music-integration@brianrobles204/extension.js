@@ -89,9 +89,6 @@ const MediaServer2PlayerIFace = {
                  { name: 'Shuffle',
                    signature: 'b',
                    access: 'readwrite'},
-                 { name: 'Rate',
-                   signature: 'd',
-                   access: 'readwrite'},
                  { name: 'LoopStatus',
                    signature: 'b',
                    access: 'readwrite'},
@@ -175,13 +172,6 @@ MediaServer2Player.prototype = {
                     callback(this, status);
             }));
     },
-    getRate: function(callback) {
-        this.GetRemote('Rate', Lang.bind(this,
-            function(rate, ex) {
-                if (!ex)
-                    callback(this, rate);
-            }));
-    },
     getPosition: function(callback) {
         this.GetRemote('Position', Lang.bind(this,
             function(position, ex) {
@@ -227,6 +217,13 @@ MediaServer2Player.prototype = {
         else
             value = "None"
         this.SetRemote('LoopStatus', value);
+    },
+    getSeek: function(callback) {
+		this.GetRemote('CanSeek', Lang.bind(this,
+            function(seek, ex) {
+			    if (!ex)
+			        callback(this, seek);
+            }));
     }
 }
 DBus.proxifyPrototype(MediaServer2Player.prototype, MediaServer2PlayerIFace)
@@ -286,7 +283,12 @@ CoverArt.prototype = {
         this._cs = coversize;
         this._update = true;
         this._hovering = false;
-        this._overlay = (support_seek.indexOf(this._name) !== -1 && cover_overlay) ? overlay : false;
+        this._canseek = false;
+        this._overlay = false;
+        this._mediaServerPlayer.getSeek(Lang.bind(this, function(sender, seek){
+                this._overlay = ((seek && cover_overlay) ? overlay : false) ? overlay : false;
+			    this._toggleOverlay( this._overlay, styleprefix );
+			}));
         this._olh = 0.85;
 	    this._oldCover = "";
 
@@ -321,7 +323,27 @@ CoverArt.prototype = {
         this._trackOPpap.set_position(Math.floor(0), Math.floor(0));
         this._trackOPpap.set_opacity(0);
         
-        if (this._overlay) {
+        this._trackOverlay.connect('clicked', 
+            Lang.bind(this, function () { this._coverClick(); }));
+
+        this._status = "";
+        this._getStatus();
+        this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
+            if (value["PlaybackStatus"])
+                this._setStatus(iface, value["PlaybackStatus"]);
+        }));
+			
+        if (this._update) {
+            this._getCover();
+            this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
+                if (value["Metadata"] && this._update)
+                    this._setCover(iface, value["Metadata"]);
+            }));
+        }
+    },
+    
+    _toggleOverlay: function(overlay, styleprefix) {
+        if (overlay) {
             //Track Background - the white area
             this._trackObg = new St.BoxLayout({vertical: true, style_class: 'track-overlay-bg'});
             this.boxCover.add_actor(this._trackObg);
@@ -343,43 +365,30 @@ CoverArt.prototype = {
             this._trackOtimeHolder.add_actor(this._trackOtime);
             this._trackObg.add_actor(this._trackOtimeHolder);
 
-            this._trackOverlay.connect('notify::hover', 
+            this._notifyhover = this._trackOverlay.connect('notify::hover', 
                 Lang.bind(this, function () {this._onEnterOverlay(this._trackOverlay, this._trackObg); }));
-        }
-        
-        this._trackOverlay.connect('clicked', 
-            Lang.bind(this, function () { this._coverClick(); }));
-
-        this._status = "";
-        this._getStatus();
-        this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
-            if (value["PlaybackStatus"])
-                this._setStatus(iface, value["PlaybackStatus"]);
-        }));
-            
-        if (this._overlay) {
+                
             this._getMetadata();
             this._currentTime = 0;
             this._songLength = 0;
             this._getPosition();
             this._updateTimer();
-            this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
+            this._propchange = this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
                 if (value["Metadata"]) 
                     this._setMetadata(iface, value["Metadata"]);
             }));
-            this._mediaServerPlayer.connect('Seeked', Lang.bind(this, function(sender, value) {
+            this._seekserver = this._mediaServerPlayer.connect('Seeked', Lang.bind(this, function(sender, value) {
                 this._getPosition();
             }));
-        }
-			
-        if (this._update) {
-            this._getCover();
-            this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
-                if (value["Metadata"] && this._update)
-                    this._setCover(iface, value["Metadata"]);
-            }));
-        }
-    },
+        } 
+        else {
+			if (this._trackObg) this._trackObg.destroy();
+			if (this._notifyhover) this._trackOverlay.disconnect(this._notifyhover);
+			this._stopTimer();
+			if (this._propchange) this._prop.disconnect(this._propchange);
+			if (this._seekserver) this._mediaServerPlayer.disconnect(this._seekserver);
+	    }
+	},
 
     _onEnterOverlay: function(hoverp, obj) {
         if (hoverp.hover) {
@@ -1148,6 +1157,7 @@ VolumeMenuInt.prototype = {
 		this._separator.destroy();
 		this._playerTitle.destroy();
 		this._mainMusicMenu.destroy();
+		this._prop.disconnect(this._propchange);
 	}
 }
  
