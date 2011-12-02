@@ -23,7 +23,7 @@ let coverpathmusic = null;
 let coverpathpause = null;
 let coverpathplay = null;
 let preferences_path = null;
-let default_setup = "";
+let default_setup = "1";
 let cover_overlay = true;
 let notification_option = true;
 let MusicEnabled = null;
@@ -238,7 +238,7 @@ function ControlButton() {
 
 ControlButton.prototype = {
     _init: function(icon, isize, callback) {
-        this.actor = new St.Bin({style_class: 'button-container'});
+        this.actor = new St.Bin({style_class: 'control-button-container'});
         this.button = new St.Button({ style_class: 'button-control' });
         this.button.connect('clicked', callback);
         this.icon = new St.Icon({
@@ -294,12 +294,12 @@ CoverArt.prototype = {
 	    this._oldCover = "";
 
         //Actual Cover Art
-        this.actor = new St.BoxLayout({vertical: true, style_class: styleprefix + 'track-cover-control'});
+        this.actor = new St.BoxLayout({vertical: true, style_class: styleprefix + 'ca-track-cover-control'});
         
-        this.boxCover = new St.BoxLayout({style_class: styleprefix + 'box-cover'});
+        this.boxCover = new St.BoxLayout({style_class: styleprefix + 'ca-box-cover'});
         this.actor.add_actor(this.boxCover);
         
-        this.trackCover = new St.Bin({style_class: styleprefix + 'track-cover', x_align: St.Align.MIDDLE});
+        this.trackCover = new St.Bin({style_class: styleprefix + 'ca-track-cover', x_align: St.Align.MIDDLE});
         this.trackCoverMusic = new Clutter.Texture({
             width: this._cs, 
             height: this._cs,
@@ -311,7 +311,7 @@ CoverArt.prototype = {
         this.boxCover.add_actor(this.trackCover);
 
         //Hover Area - aka the whole cover
-        this._trackOverlay = new St.Button({style_class: 'track-overlay'});
+        this._trackOverlay = new St.Button({style_class: 'ca-track-overlay'});
         this.boxCover.add_actor(this._trackOverlay);
         this._trackOverlay.height = this._cs;
         this._trackOverlay.width = this._cs;
@@ -349,7 +349,7 @@ CoverArt.prototype = {
     _toggleOverlay: function(overlay, styleprefix) {
         if (overlay) {
             //Track Background - the white area
-            this._trackObg = new St.BoxLayout({vertical: true, style_class: 'track-overlay-bg'});
+            this._trackObg = new St.BoxLayout({vertical: true, style_class: 'ca-track-overlay-bg'});
             this.boxCover.add_actor(this._trackObg);
             this._trackObg.height = this._cs - (this._cs*this._olh);
             this._trackObg.width = this._cs;
@@ -357,14 +357,14 @@ CoverArt.prototype = {
             this._trackObg.set_opacity(0)
             
             //Track Timer - the black position bar
-            this._trackOtimer = new St.BoxLayout({style_class: 'track-overlay-timer'});
+            this._trackOtimer = new St.BoxLayout({style_class: 'ca-track-overlay-timer'});
             this._trackObg.add_actor(this._trackOtimer);
             this._trackOtimer.height = 2;
             this._trackOtimer.width = 0;
             this._trackOtimer.set_position(Math.floor(0), Math.floor(this._cs) - Math.floor(this._cs*this._olh) - 2);
             
             //Track Time - the text displaying the time left
-            this._trackOtime = new St.Label({text: "0:00 / 0:00", style_class: styleprefix + 'track-overlay-time'});
+            this._trackOtime = new St.Label({text: "0:00 / 0:00", style_class: styleprefix + 'ca-track-overlay-time'});
             this._trackOtimeHolder = new St.Bin({x_align: St.Align.END});
             this._trackOtimeHolder.add_actor(this._trackOtime);
             this._trackObg.add_actor(this._trackOtimeHolder);
@@ -596,19 +596,19 @@ MusicIntBox.prototype = {
         this._prop = new Prop(owner);
 
         //Actor that holds everything
-        this.actor = new St.BoxLayout({style_class: styleprefix + 'track-box'});
+        this.actor = new St.BoxLayout({style_class: styleprefix + 'mib-track-box'});
 
         //Track CoverArt
         this._trackCoverArt = new CoverArt(owner, coversize, overlay, styleprefix);
         //Holders
-        this._trackInfoHolder = new St.Bin({style_class: styleprefix + 'track-info-holder', y_align: St.Align.MIDDLE});
-        this._trackControlHolder = new St.Bin({style_class: styleprefix + 'track-control-holder', x_align: St.Align.MIDDLE});
+        this._trackInfoHolder = new St.Bin({style_class: styleprefix + 'mib-track-info-holder', y_align: St.Align.MIDDLE});
+        this._trackControlHolder = new St.Bin({style_class: styleprefix + 'mib-track-control-holder', x_align: St.Align.MIDDLE});
         this.actor.add_actor(this._trackCoverArt.getActor());
         this.actor.add_actor(this._trackInfoHolder);
 
         //Track Information
-        this._infos = new St.BoxLayout({vertical: true, style_class: styleprefix + 'track-info'});
-        this._title = new St.Label({text: 'Unknown Title', style_class: 'track-title'});
+        this._infos = new St.BoxLayout({vertical: true, style_class: styleprefix + 'mib-track-info'});
+        this._title = new St.Label({text: 'Unknown Title', style_class: 'mib-track-title'});
         this._infos.add_actor(this._title);
         this._artist = new St.Label({text: 'Unknown Artist'});
         this._infos.add_actor(this._artist);
@@ -864,7 +864,7 @@ MusicMenu.prototype = {
         this._prop = new Prop(owner);
 
         //Player Title
-        this._playerTitle = new TextImageItem(this._getName(), this._name,  false, 16, {style_class: "player-title", reactive: false});
+        this._playerTitle = new TextImageItem(this._getName(), this._name,  false, 16, {style_class: "music-player-title", reactive: false});
         this._playerTitle.setIconType(St.IconType.FULLCOLOR);
         this.addMenuItem(this._playerTitle);
         
@@ -1099,7 +1099,7 @@ VolumeMenuInt.prototype = {
         //Main Music Menu
         this._mainMusicMenu = new PopupMenu.PopupBaseMenuItem();
         
-        this._playerTitle = new St.BoxLayout({style_class: 'v-player-title'});
+        this._playerTitle = new St.BoxLayout({style_class: 'v-music-player-title'});
         this._icon = new St.Icon({ icon_type: St.IconType.FULLCOLOR, icon_size: 16, icon_name: this._name});
         this._label = new St.Label({text: this._getName(), style_class: "label-class"});
         this._playerTitle.add_actor(this._icon);
@@ -1359,9 +1359,9 @@ MusicIntegrationExtension.prototype = {
         this.nameWatcher = [];
     
         this._schema = new Gio.Settings({ schema: 'org.gnome.shell.extensions.musicintegration' });
-        default_setup = this._schema.get_string("setup");
-        cover_overlay = this._schema.get_boolean("overlay");
-        notification_option = this._schema.get_boolean("notification");
+        if(this._schema.get_string("setup")) default_setup = this._schema.get_string("setup");
+        if(this._schema.get_boolean("overlay")) cover_overlay = this._schema.get_boolean("overlay");
+        if(this._schema.get_boolean("notification")) notification_option = this._schema.get_boolean("notification");
     
         //Start listening for music players to integrate.
         for (var p=0; p<compatible_players.length; p++) {

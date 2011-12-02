@@ -1,29 +1,29 @@
 /****Cover Art and Overlays****/
-.track-cover-control{
+.ca-track-cover-control{
     background-color: rgba(200,200,200,0.1);
     padding: 10px;
     border-radius: 10px;
 }
-.n-track-cover-control{
+.n-ca-track-cover-control{
     background-color: rgba(200,200,200,0.1);
     padding: 7px;
     border-radius: 7px;
 }
-.v-track-cover-control{
+.v-ca-track-cover-control{
     background-color: rgba(200,200,200,0.1);
     padding: 8px;
     border-radius: 8px;
 }
-.track-overlay{
+.ca-track-overlay{
     background-color: rgba(250,250,250,0.3);
 }
-.track-overlay-bg{
+.ca-track-overlay-bg{
     background-color: rgba(250,250,250,0.5);
 }
-.track-overlay-timer{
+.ca-track-overlay-timer{
     background-color: rgba(0,0,0,0.5);
 }
-.track-overlay-time, .n-track-overlay-time, .v-track-overlay-time{
+.ca-track-overlay-time, .n-ca-track-overlay-time, .v-ca-track-overlay-time{
     color: rgba(0,0,0,0.75);
     padding-right: 5px;
     font-size: 10px;
@@ -32,30 +32,30 @@
 
 
 /****Main Indicator****/
-.track-title{
+.mib-track-title{
     font-weight: bold;
 }
-.track-info-holder, .n-track-info-holder, .v-track-info-holder {
+.mib-track-info-holder, .mib-n-track-info-holder, .mib-v-track-info-holder {
     padding-left: 10px;
     color: white;
 }
-.track-box, .n-track-box, .v-track-box {
+.mib-track-box, .n-mib-track-box, .v-mib-track-box {
     padding:17px;
     background-gradient-start: rgba(0,0,0,0.65);
     background-gradient-end: rgba(0,0,0,0.7);
     border-radius: 4px;
 }
-.track-info StLabel, .n-track-info StLabel{
+.mib-track-info StLabel, .n-mib-track-info StLabel{
     padding-left: 5px;
 }
-.track-control-holder{
+.mib-track-control-holder{
     padding-top: 15px;
     padding-bottom: 10px;
 }
 .label-class{
     padding-left: 20px;
 }
-.track-overlay-time{
+.ca-track-overlay-time{
     padding-top: 1px;
 }
 
@@ -69,39 +69,42 @@
     padding: 2px;
     background-color: rgba(200,200,200,0.5);
 }
-.n-track-box{
+.n-mib-track-box{
     padding:10px;
 }
-.n-track-info StLabel{
+.n-mib-track-info StLabel{
     font-size: 11.05px;
 }
-.n-track-control-holder{
+.n-mib-track-control-holder{
     padding-top: 5px;
 }
 
 /****Volume Menu****/
-.v-track-box{
+.v-mib-track-box{
     padding:10px;
 }
-.v-track-info StLabel{
+.v-mib-track-info {
+    padding-left: 12px;
+}
+.v-mib-track-info StLabel{
     font-size: 11.05px;
 }
-.v-track-control-holder{
+.v-mib-track-control-holder{
     padding-top: 5px;
 }
-.v-track-overlay-time{
+.v-ca-track-overlay-time{
     font-size: 8px;
 }
-.v-player-title{
+.v-music-player-title{
     padding: 3px 0px 7px 0px;
 }
-.v-track-overlay-time{
+.v-ca-track-overlay-time{
     font-size: 9px;
 }
 
 
 /****Control Buttons****/
-.button-container {
+.control-button-container {
     padding: 5px;
 }
 .spaceb{
