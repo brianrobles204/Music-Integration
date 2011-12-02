@@ -285,10 +285,11 @@ CoverArt.prototype = {
         this._hovering = false;
         this._canseek = false;
         this._overlay = false;
-        this._mediaServerPlayer.getSeek(Lang.bind(this, function(sender, seek){
+        /*this._mediaServerPlayer.getSeek(Lang.bind(this, function(sender, seek){
                 this._overlay = ((seek && cover_overlay) ? overlay : false) ? overlay : false;
 			    this._toggleOverlay( this._overlay, styleprefix );
-			}));
+			}));*/
+        this._overlay = (support_seek.indexOf(this._name) !== -1 && cover_overlay) ? overlay : false;
         this._olh = 0.85;
 	    this._oldCover = "";
 
@@ -325,6 +326,7 @@ CoverArt.prototype = {
         
         this._trackOverlay.connect('clicked', 
             Lang.bind(this, function () { this._coverClick(); }));
+	this._toggleOverlay( this._overlay, styleprefix );
 
         this._status = "";
         this._getStatus();
@@ -338,6 +340,8 @@ CoverArt.prototype = {
             this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
                 if (value["Metadata"] && this._update)
                     this._setCover(iface, value["Metadata"]);
+                /*if (value["CanSeek"] !== undefined)
+                    this._toggleOverlay(value["CanSeek"]?overlay:false, styleprefix);*/
             }));
         }
     },
