@@ -26,6 +26,7 @@ let preferences_path = null;
 let default_setup = "1";
 let cover_overlay = true;
 let notification_option = true;
+let has_gsettings_schema = false;
 let MusicEnabled = null;
 let MusicVolumeOption = null;
 let MusicIndicators = []; 
@@ -651,7 +652,7 @@ MusicIntBox.prototype = {
         this.controls.add_actor(this._prevButton.getActor());
         this.controls.add_actor(this._playButton.getActor());
         this.controls.add_actor(this._nextButton.getActor());
-        if (openbutton == "preferences") {
+        if (openbutton == "preferences" && has_gsettings_schema) {
             this.controls.add_actor(this._spaceButtonTwo);
             this.controls.add_actor(this._settButton.getActor());
         }
@@ -897,12 +898,12 @@ MusicMenu.prototype = {
         this.addMenuItem(this._repeat);
 
         //Music Integration Preferences
-        this.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        if (has_gsettings_schema) this.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this._preferences = new TextImageItem("Music Integration Preferences", "system-run", false, 12, {style_class: "system-preferences"});
         this._preferences.connect('activate', Lang.bind(this, function(item) {
             this._openPreferences();
         }));
-        this.addMenuItem(this._preferences);
+        if (has_gsettings_schema) this.addMenuItem(this._preferences);
 
         //Update and start listening
         this._getStatus();
@@ -1356,13 +1357,30 @@ MusicIntegrationExtension.prototype = {
         preferences_path = metadata.path + '/music-int-pref.py';
         compatible_players = metadata.players;
         support_seek = metadata.support_seek;
-        this.nameWatcher = [];
     
-        this._schema = new Gio.Settings({ schema: 'org.gnome.shell.extensions.musicintegration' });
-        if(this._schema.get_string("setup")) default_setup = this._schema.get_string("setup");
-        if(this._schema.get_boolean("overlay")) cover_overlay = this._schema.get_boolean("overlay");
-        if(this._schema.get_boolean("notification")) notification_option = this._schema.get_boolean("notification");
+        //Extension Settings
+        if (!metadata.use_metadata_pref && new Gio.Settings({schema:'org.gnome.shell'}).list_schemas().indexOf('org.gnome.shell.extensions.musicintegration') !== -1) {
+			has_gsettings_schema = true;
+			
+            this._schema = new Gio.Settings({ schema: 'org.gnome.shell.extensions.musicintegration' });
+            if(this._schema.get_string("setup")) default_setup = this._schema.get_string("setup");
+            if(this._schema.get_boolean("overlay")) cover_overlay = this._schema.get_boolean("overlay");
+            if(this._schema.get_boolean("notification")) notification_option = this._schema.get_boolean("notification");
     
+            this._schema.connect('changed', Lang.bind(this, function(schema, key){
+                if(key == "setup") default_setup = this._schema.get_string("setup");
+                if(key == "overlay") cover_overlay = this._schema.get_boolean("overlay");
+                if(key == "notification") notification_option = this._schema.get_boolean("notification");
+                if (MusicEnabled) {
+                    this.disable(); this.enable();
+	    	    }
+    	    }));
+        } else {
+            default_setup = metadata.pref_setup;
+            cover_overlay = metadata.pref_overlay;
+            notification_option = metadata.pref_notification;
+	    }
+        
         //Start listening for music players to integrate.
         for (var p=0; p<compatible_players.length; p++) {
             DBus.session.watch_name('org.mpris.MediaPlayer2.'+compatible_players[p], null,
@@ -1370,15 +1388,6 @@ MusicIntegrationExtension.prototype = {
                 Lang.bind(this, this.removePlayer)
             );
         }
-    
-        this._schema.connect('changed', Lang.bind(this, function(schema, key){
-            if(key == "setup") default_setup = this._schema.get_string("setup");
-            if(key == "overlay") cover_overlay = this._schema.get_boolean("overlay");
-            if(key == "notification") notification_option = this._schema.get_boolean("notification");
-            if (MusicEnabled) {
-                this.disable(); this.enable();
-		    }
-	    }));
 	},
 	
 	enable: function() {
@@ -1429,7 +1438,7 @@ MusicIntegrationExtension.prototype = {
 		}
 	    if(default_setup == 2) {
 			MusicVolumePlayers[owner] = new VolumeMenuInt(owner);
-			if (!MusicVolumeOption) this.buildVolumeOption();
+			if (!MusicVolumeOption && has_gsettings_schema) this.buildVolumeOption();
 		}
         if(notification_option) {
 	    	MusicSources[owner] = new MusicSource(owner);
