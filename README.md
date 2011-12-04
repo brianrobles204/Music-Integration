@@ -20,7 +20,9 @@ To enable, simply copy-paste the following in a terminal:
 * `cd ~/.local/share/gnome-shell/extensions/music-integration@brianrobles204`
 * `sudo cp org.gnome.shell.extensions.musicintegration.gschema.xml /usr/share/glib-2.0/schemas/`
 * `sudo glib-compile-schemas /usr/share/glib-2.0/schemas/`
+
 And that's it. Log out and in, or restart the shell for it to take effect.
+
 
 If you choose to install it manually, use the following instructions:
 
