@@ -16,12 +16,14 @@ You can try the extension instantly through the Gnome Extensions Page
 - https://extensions.gnome.org/extension/30/music-integration/
 Unfortunately, installing the extension this way will have the preferences option disabled by default.
 To enable, simply copy-paste the following in a terminal:
+
 * `cd ~/.local/share/gnome-shell/extensions/music-integration@brianrobles204`
 * `sudo cp org.gnome.shell.extensions.musicintegration.gschema.xml /usr/share/glib-2.0/schemas/`
 * `sudo glib-compile-schemas /usr/share/glib-2.0/schemas/`
 And that's it. Log out and in, or restart the shell for it to take effect.
 
 If you choose to install it manually, use the following instructions:
+
 1. Download and extract.
 2. Put the folder `music-integration@brianrobles204` in `~/.local/share/gnome-shell/extensions/`
 3. As root, put `org.gnome.shell.extensions.musicintegration.gschema.xml` in `/usr/share/glib-2.0/schemas/`
