@@ -25,6 +25,8 @@ Other Supported Players (may be untested or partially supported):
 * Pragha
 * xbmc
 
+Note: Audacious is unsupported because it uses an obsolete version of MPRIS. Sorry...
+
 ----
 
 ### Screenshot
@@ -33,9 +35,8 @@ Other Supported Players (may be untested or partially supported):
 ----
 
 ### Installation
-You can try the extension instantly through the Gnome Extensions Page 
-- https://extensions.gnome.org/extension/30/music-integration/
-Unfortunately, installing the extension this way will have the preferences option disabled by default.
+You can try the extension instantly through the [Gnome Extensions Page] (https://extensions.gnome.org/extension/30/music-integration/) <br/>
+Unfortunately, installing the extension this way will have the preferences option disabled by default. <br/>
 To enable, simply copy-paste the following lines in a terminal, one at a time:
 
     cd ~/.local/share/gnome-shell/extensions/music-integration@brianrobles204
