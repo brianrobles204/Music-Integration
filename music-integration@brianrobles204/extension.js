@@ -58,6 +58,9 @@ const MediaServer2IFace = {
                    access: 'read'},
                  { name: 'CanQuit',
                    signature: 'b',
+                   access: 'read'},
+                 { name: 'Indentity',
+                   signature: 's',
                    access: 'read'}],
 };
 
@@ -140,6 +143,13 @@ MediaServer2.prototype = {
     _init: function(owner) {
         DBus.session.proxifyObject(this, owner, '/org/mpris/MediaPlayer2', this);
     },
+    getIdentity: function(callback) {
+		this.GetRemote('Identity', Lang.bind(this, 
+		    function(identity, ex) {
+				if (!ex)
+				    callback(this, identity)
+		    }));
+	},
     getRaise: function(callback) {
         this.GetRemote('CanRaise', Lang.bind(this,
             function(raise, ex) {
@@ -860,12 +870,13 @@ MusicMenu.prototype = {
         //DBus Stuff
         this._owner = owner;
         this._name = this._owner.split('.')[3];
+        this._identity = this._name;
         this._mediaServerPlayer = new MediaServer2Player(owner);
         this._mediaServer = new MediaServer2(owner);
         this._prop = new Prop(owner);
 
         //Player Title
-        this._playerTitle = new TextImageItem(this._getName(), this._name,  false, 16, {style_class: "music-player-title", reactive: false});
+        this._playerTitle = new TextImageItem(this._identity, this._name,  false, 16, {style_class: "music-player-title", reactive: false});
         this._playerTitle.setIconType(St.IconType.FULLCOLOR);
         this.addMenuItem(this._playerTitle);
         
@@ -906,7 +917,7 @@ MusicMenu.prototype = {
         if (has_gsettings_schema) this.addMenuItem(this._preferences);
 
         //Update and start listening
-        this._getStatus();
+        this._getIdentity();
         this._updateSwitches();
         this._getVolume();
 
@@ -924,12 +935,17 @@ MusicMenu.prototype = {
         Util.spawn([preferences_path]);
     },
 
-    _getName: function() {
-        return this._name.charAt(0).toUpperCase() + this._name.slice(1);
+    _getIdentity: function() {
+        this._mediaServer.getIdentity(Lang.bind(this, 
+            function(sender, identity) {
+			    this._identity = identity;
+			    this._getStatus();
+			}
+		));
     },
 
     _setName: function(status) {
-        this._playerTitle.setText(this._getName() + "  -  " + _(status));
+        this._playerTitle.setText(this._identity + "  -  " + _(status));
     },
 
     _updateSwitches: function() {
@@ -1085,6 +1101,7 @@ VolumeMenuInt.prototype = {
         //DBus Stuff
         this._owner = owner;
         this._name = this._owner.split('.')[3];
+        this._identity = this._name;
         this._mediaServerPlayer = new MediaServer2Player(owner);
         this._mediaServer = new MediaServer2(owner);
         this._prop = new Prop(owner);
@@ -1098,11 +1115,11 @@ VolumeMenuInt.prototype = {
         this.menu.menu.addMenuItem(this._separator, this.menu.menu.numMenuItems - 3);
         
         //Main Music Menu
-        this._mainMusicMenu = new PopupMenu.PopupBaseMenuItem();
+        this._mainMusicMenu = new PopupMenu.PopupBaseMenuItem({style_class: 'v-main-music-menu'});
         
         this._playerTitle = new St.BoxLayout({style_class: 'v-music-player-title'});
         this._icon = new St.Icon({ icon_type: St.IconType.FULLCOLOR, icon_size: 16, icon_name: this._name});
-        this._label = new St.Label({text: this._getName(), style_class: "label-class"});
+        this._label = new St.Label({text: this._identity + " - Stopped", style_class: "label-class"});
         this._playerTitle.add_actor(this._icon);
         this._playerTitle.add_actor(this._label);
         
@@ -1131,7 +1148,7 @@ VolumeMenuInt.prototype = {
         this.menu.menu.connect('open-state-changed', Lang.bind(this, this._extraOpenStateChanged));
 
         //Update and start listening
-        this._getStatus();
+        this._getIdentity();
 
         this._propchange = this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
             if (value["PlaybackStatus"])
@@ -1144,12 +1161,17 @@ VolumeMenuInt.prototype = {
         if(MusicSources[this._owner]) MusicSources[this._owner]._setUpdate(!open);
 	},
 
-    _getName: function() {
-        return this._name.charAt(0).toUpperCase() + this._name.slice(1);
+    _getIdentity: function() {
+        this._mediaServer.getIdentity(Lang.bind(this, 
+            function(sender, identity) {
+			    this._identity = identity;
+			    this._getStatus();
+			}
+		));
     },
 
     _setStatus: function(sender, status) {
-        this._playerTitle.setText(this._getName() + "  -  " + status);
+        this._label.text = this._identity + "  -  " + status;
     },
 
     _getStatus: function() {
@@ -1235,6 +1257,7 @@ MusicSource.prototype = {
         //DBus Stuff
         this._owner = owner;
         this._name = this._owner.split('.')[3];
+        this._identity = this._getName();
         this._mediaServerPlayer = new MediaServer2Player(owner);
         this._mediaServer = new MediaServer2(owner);
         this._prop = new Prop(owner);
@@ -1248,6 +1271,7 @@ MusicSource.prototype = {
 
         //Update and start listening
         this._getMetadata();
+        this._getIdentity();
 
         this._propchange = this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
 	        if (value["Metadata"]) {
@@ -1270,6 +1294,15 @@ MusicSource.prototype = {
             }
         }));
         
+    },
+
+    _getIdentity: function() {
+        this._mediaServer.getIdentity(Lang.bind(this, 
+            function(sender, identity) {
+			    this._identity = identity;
+			    this.setTitle(this._identity + " Integration");
+			}
+		));
     },
 
     _getName: function() {
