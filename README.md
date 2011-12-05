@@ -35,7 +35,7 @@ Note: Audacious is unsupported because it uses an obsolete version of MPRIS. Sor
 ----
 
 ### Installation
-You can try the extension instantly through the [Gnome Extensions Page] (https://extensions.gnome.org/extension/30/music-integration/) <br/>
+You can try the extension instantly through the [Gnome Extensions Page] (https://extensions.gnome.org/extension/30/music-integration/). <br/>
 Unfortunately, installing the extension this way will have the preferences option disabled by default. <br/>
 To enable, simply copy-paste the following lines in a terminal, one at a time:
 
