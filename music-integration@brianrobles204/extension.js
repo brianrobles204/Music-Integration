@@ -1359,7 +1359,7 @@ MusicIntegrationExtension.prototype = {
         support_seek = metadata.support_seek;
     
         //Extension Settings
-        if (!metadata.use_metadata_pref && new Gio.Settings({schema:'org.gnome.shell'}).list_schemas().indexOf('org.gnome.shell.extensions.musicintegration') !== -1) {
+        if (!metadata.use_metadata_pref && Gio.Settings.list_schemas().indexOf('org.gnome.shell.extensions.musicintegration') !== -1) {
 			has_gsettings_schema = true;
 			
             this._schema = new Gio.Settings({ schema: 'org.gnome.shell.extensions.musicintegration' });
