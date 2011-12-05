@@ -38,6 +38,7 @@ Note: Audacious is unsupported because it uses an obsolete version of MPRIS. Sor
 
 #### Dependencies
 
+    python
     python-gobject
 
 #### Installation through the Official Gnome website
