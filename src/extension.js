@@ -622,11 +622,11 @@ MusicIntBox.prototype = {
 
         //Track Information
         this._infos = new St.BoxLayout({vertical: true, style_class: styleprefix + 'mib-track-info'});
-        this._title = new St.Label({text: 'Unknown Title', style_class: 'mib-track-title'});
+        this._title = new St.Label({text: _('Unknown Title'), style_class: 'mib-track-title'});
         this._infos.add_actor(this._title);
-        this._artist = new St.Label({text: 'Unknown Artist'});
+        this._artist = new St.Label({text: _('Unknown Artist')});
         this._infos.add_actor(this._artist);
-        this._album = new St.Label({text: 'Unknown Album'});
+        this._album = new St.Label({text: _('Unknown Album')});
         this._infos.add_actor(this._album);
         this._infos.add_actor(this._trackControlHolder);
         this._trackInfoHolder.set_child(this._infos);
@@ -713,11 +713,11 @@ MusicIntBox.prototype = {
 
     _setMetadata: function(sender, metadata) {
         if (metadata["xesam:artist"]) this._artist.text = metadata["xesam:artist"].toString();
-            else this._artist.text = "Artist";
+            else this._artist.text = _("Artist");
         if (metadata["xesam:album"]) this._album.text = metadata["xesam:album"].toString();
-            else this._album.text = "Album";
+            else this._album.text = _("Album");
         if (metadata["xesam:title"]) this._title.text = metadata["xesam:title"].toString();
-            else this._title.text = "Title";
+            else this._title.text = _("Title");
     },
 
     _getMetadata: function() {
@@ -904,7 +904,7 @@ MusicMenu.prototype = {
         this.addMenuItem(this._shuffle);
 
         //Repeat
-        this._repeat = new ToggleItem("Repeat", "media-playlist-repeat", true, {style_class: 'repeatitem'});
+        this._repeat = new ToggleItem(_("Repeat"), "media-playlist-repeat", true, {style_class: 'repeatitem'});
         this._repeat.connect('toggled', Lang.bind(this, function(item) {
             this._mediaServerPlayer.setRepeat(item.state);
             this._updateSwitches();
@@ -1457,7 +1457,7 @@ MusicIntegrationExtension.prototype = {
             this.volmenu = Main.panel._statusArea['volume'];
             break;
         }
-		MusicVolumeOption = new PopupMenu.PopupMenuItem("Music Integration Preferences");
+		MusicVolumeOption = new PopupMenu.PopupMenuItem(_("Music Integration Preferences"));
         this.volmenu.menu.addMenuItem(MusicVolumeOption, this.volmenu.menu.numMenuItems - 1);
         MusicVolumeOption.connect('activate', Lang.bind(this, function() {
             Main.overview.hide();
