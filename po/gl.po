@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-shell-extension-music-integration 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-07 21:57+0100\n"
-"PO-Revision-Date: 2011-12-07 21:58+0100\n"
+"POT-Creation-Date: 2011-12-07 22:42+0100\n"
+"PO-Revision-Date: 2011-12-07 22:38+0100\n"
 "Last-Translator: Fran Dieguez <frandieguez@gnome.org>\n"
 "Language-Team: Galician <gnome-l10n-gl@gnome.org>\n"
 "Language: gl_ES\n"
@@ -45,5 +45,52 @@ msgid "Repeat"
 msgstr "Repetir"
 
 #: ../src/extension.js:916 ../src/extension.js:1460
+msgid "Preferences"
+msgstr "Preferencias"
+
+#: ../src/music-int-pref.py:18
 msgid "Music Integration Preferences"
-msgstr "Preferncias da integración de música"
+msgstr "Preferencias da integración de música"
+
+#: ../src/music-int-pref.py:43
+msgid "Place indicator as:"
+msgstr "Dispor o indicator como:"
+
+#. TODO: This option should be dropped {{
+#: ../src/music-int-pref.py:56
+msgid "Choose a setup :"
+msgstr "Seleccione unha configuración:"
+
+#. }}
+#: ../src/music-int-pref.py:58
+msgid "Indicator in Panel"
+msgstr "Indicador no panel"
+
+#: ../src/music-int-pref.py:59
+msgid "Part of the Volume Menu"
+msgstr "Parte do menú de volume"
+
+#: ../src/music-int-pref.py:60
+msgid "Don't show indicator"
+msgstr "Non mostrar o indicador"
+
+#: ../src/music-int-pref.py:73
+msgid "Show notifications"
+msgstr "Mostrar notificacións"
+
+#: ../src/music-int-pref.py:85
+msgid "Show play time over cover art"
+msgstr "Mostrar tempo de reprodución sobre a carátula"
+
+#: ../src/music-int-pref.py:100
+msgid "Quit"
+msgstr "Saír"
+
+#~ msgid "Choose your default setup :"
+#~ msgstr "Seleccione a configuración predeterminada:"
+
+#~ msgid "Notifications only"
+#~ msgstr "Só notificacións"
+
+#~ msgid "Cover Art Time Overlay"
+#~ msgstr "Mostrar o tempo sobre a carátula"
