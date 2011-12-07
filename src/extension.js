@@ -689,7 +689,7 @@ MusicIntBox.prototype = {
 
     _openPreferences: function() {
         Main.overview.hide();
-        Util.spawn([preferences_path]);
+        Util.spawn(["python", preferences_path]);
     },
 
     _setStatus: function(sender, status) {
@@ -935,7 +935,7 @@ MusicMenu.prototype = {
 
     _openPreferences: function() {
         Main.overview.hide();
-        Util.spawn([preferences_path]);
+        Util.spawn(["python", preferences_path]);
     },
 
     _getIdentity: function() {
