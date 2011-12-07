@@ -4,7 +4,7 @@ topextensiondir = $(datadir)/gnome-shell/extensions
 extensiondir = $(topextensiondir)/$(uuid)
 uuid = music-integration@brianrobles204
 
-nobase_dist_extension_DATA = extension.js stylesheet.css icons Makefile.am music-int-pref.py music.png pause.png play.png
+nobase_dist_extension_DATA = extension.js stylesheet.css Makefile.am music-int-pref.py music.png pause.png play.png icons/*
 nodist_extension_DATA = metadata.json $(EXTRA_EXTENSION)
 
 EXTRA_DIST = metadata.json.in
