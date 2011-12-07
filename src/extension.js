@@ -15,6 +15,9 @@ const GLib = imports.gi.GLib;
 const Tweener = imports.ui.tweener;
 const Util = imports.misc.util;
 
+const Gettext = imports.gettext.domain('gnome-shell-extension-musicintegration');
+const _ = Gettext.gettext;
+
 /* global values */
 let icon_path = null;
 let compatible_players = null;
@@ -886,14 +889,14 @@ MusicMenu.prototype = {
         this.addActor(this._mainMusicBox.getActor());
 
         //Volume
-        this._volume = new VolSliderItem("Music Volume", "audio-volume-high", "volume-slider", 0);
+        this._volume = new VolSliderItem(_("Music Volume"), "audio-volume-high", "volume-slider", 0);
         this._volume.connect('value-changed', Lang.bind(this, function(item) {
             this._mediaServerPlayer.setVolume(item._value);
         }));
         this.addMenuItem(this._volume);
 
         //Shuffle
-        this._shuffle = new ToggleItem("Shuffle", "media-playlist-shuffle", true, {style_class: 'shuffleitem'});
+        this._shuffle = new ToggleItem(_("Shuffle"), "media-playlist-shuffle", true, {style_class: 'shuffleitem'});
         this._shuffle.connect('toggled', Lang.bind(this, function(item) {
             this._mediaServerPlayer.setShuffle(item.state);
             this._updateSwitches();
@@ -910,7 +913,7 @@ MusicMenu.prototype = {
 
         //Music Integration Preferences
         if (has_gsettings_schema) this.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        this._preferences = new TextImageItem("Music Integration Preferences", "system-run", false, 12, {style_class: "system-preferences"});
+        this._preferences = new TextImageItem(_("Music Integration Preferences"), "system-run", false, 12, {style_class: "system-preferences"});
         this._preferences.connect('activate', Lang.bind(this, function(item) {
             this._openPreferences();
         }));
@@ -1458,7 +1461,7 @@ MusicIntegrationExtension.prototype = {
         this.volmenu.menu.addMenuItem(MusicVolumeOption, this.volmenu.menu.numMenuItems - 1);
         MusicVolumeOption.connect('activate', Lang.bind(this, function() {
             Main.overview.hide();
-            Util.spawn([preferences_path]);
+            Util.spawn(["python", preferences_path]);
 		}));
 	},
 	
