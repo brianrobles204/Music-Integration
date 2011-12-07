@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 
 from gi.repository import Gio, Gtk
+import gettext
+
+TRANSLATION_DOMAIN = "gnome-shell-extension-musicintegration"
+
+gettext.install(TRANSLATION_DOMAIN)
 
 class App:
     BASE_KEY = "org.gnome.shell.extensions.musicintegration"
@@ -10,7 +15,7 @@ class App:
 
         window = Gtk.Window()
         window.connect('destroy', lambda w: Gtk.main_quit())
-        window.set_title('Music Integration Preferences')
+        window.set_title(_('Music Integration Preferences'))
         window.set_default_size(400, 160)        
         window.set_border_width(6)
 
@@ -35,7 +40,7 @@ class App:
 
         label = Gtk.Label("")
         vbox.pack_start(label, False, True, 0)
-        labelT = Gtk.Label("Choose your default setup :")
+        labelT = Gtk.Label(_("Choose your default setup :"))
         vbox.pack_start(labelT, False, True, 0)
         
         hplayerbox = Gtk.HBox(spacing=0)
@@ -46,10 +51,10 @@ class App:
         player = Gtk.ComboBoxText()
         
         hplayerbox.pack_start(player, False, True, 0)
-        player.append_text('Choose a setup :')
-        player.append_text('Player as Indicator in Panel')
-        player.append_text('Player in Volume Menu')
-        player.append_text('Notifications only')
+        player.append_text(_('Choose a setup :'))
+        player.append_text(_('Player as Indicator in Panel'))
+        player.append_text(_('Player in Volume Menu'))
+        player.append_text(_('Notifications only'))
         player.connect('changed', self.keys_change, settings, nswitch)
         player.set_active(int(settings.get_string("setup")))
         player.set_size_request(300, 0)
@@ -62,7 +67,7 @@ class App:
         vbox.pack_start(nhbox, False, True, 0)
         nhbox.set_size_request(300, 30)
         
-        nlabel = Gtk.Label("Notifications")
+        nlabel = Gtk.Label(_("Notifications"))
         nhbox.pack_start(nlabel, False, True, 0)
         
         nswitch.set_active(settings.get_boolean("notification"))
@@ -74,7 +79,7 @@ class App:
         vbox.pack_start(cohbox, False, True, 0)
         cohbox.set_size_request(300, 30)
         
-        colabel = Gtk.Label("Cover Art Time Overlay")
+        colabel = Gtk.Label(_("Cover Art Time Overlay"))
         cohbox.pack_start(colabel, False, True, 0)
         
         coswitch = Gtk.Switch()
@@ -89,7 +94,7 @@ class App:
         quithbox = Gtk.HBox()
         mainvbox.add(quithbox)
 
-        quitbutton = Gtk.Button("Quit")
+        quitbutton = Gtk.Button(_("Quit"))
         quitbutton.connect("clicked", Gtk.main_quit )
         quithbox.pack_start(quitbutton, False, True, 0)
         
