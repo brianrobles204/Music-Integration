@@ -913,7 +913,7 @@ MusicMenu.prototype = {
 
         //Music Integration Preferences
         if (has_gsettings_schema) this.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        this._preferences = new TextImageItem(_("Music Integration Preferences"), "system-run", false, 12, {style_class: "system-preferences"});
+        this._preferences = new TextImageItem(_("Preferences"), "system-run", false, 12, {style_class: "system-preferences"});
         this._preferences.connect('activate', Lang.bind(this, function(item) {
             this._openPreferences();
         }));
@@ -1457,7 +1457,7 @@ MusicIntegrationExtension.prototype = {
             this.volmenu = Main.panel._statusArea['volume'];
             break;
         }
-		MusicVolumeOption = new PopupMenu.PopupMenuItem(_("Music Integration Preferences"));
+		MusicVolumeOption = new PopupMenu.PopupMenuItem(_("Preferences"));
         this.volmenu.menu.addMenuItem(MusicVolumeOption, this.volmenu.menu.numMenuItems - 1);
         MusicVolumeOption.connect('activate', Lang.bind(this, function() {
             Main.overview.hide();
