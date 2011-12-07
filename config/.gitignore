@@ -1,3 +1,4 @@
 install-sh
 mkinstalldirs
 missing
+py-compile
