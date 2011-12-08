@@ -23,6 +23,7 @@
     "rhythmbox",
     "rhythmbox3",
     "spotify",
+    "tomahawk",
     "xbmc"
 ],
 "support_seek": [
@@ -35,6 +36,7 @@
     "quodlibet",
     "rhythmbox",
     "rhythmbox3",
+    "tomahawk",
     "spotify"
 ],
 
