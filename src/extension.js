@@ -1467,12 +1467,12 @@ MusicIntegrationExtension.prototype = {
 	
 	buildPlayer: function(owner) {
         let _children = Main.panel._rightBox.get_children();
-	    if(default_setup == 1) {
+	    if(default_setup == 0) {
 			MusicIndicators[owner] = new MusicIndicator(owner);
 	        Main.panel._rightBox.insert_actor(MusicIndicators[owner].getActor(), _children.length - 1);
 	        Main.panel._menus.addMenu(MusicIndicators[owner].getMenu());
 		}
-	    if(default_setup == 2) {
+	    if(default_setup == 1) {
 			MusicVolumePlayers[owner] = new VolumeMenuInt(owner);
 			if (!MusicVolumeOption && has_gsettings_schema) this.buildVolumeOption();
 		}

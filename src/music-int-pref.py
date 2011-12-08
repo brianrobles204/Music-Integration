@@ -10,7 +10,7 @@ gettext.install(TRANSLATION_DOMAIN)
 
 class App:
 
-        BASE_KEY = "org.gnome.shell.extensions.musicintegration"
+    BASE_KEY = "org.gnome.shell.extensions.musicintegration"
 
     def __init__(self):
         settings = Gio.Settings.new(self.BASE_KEY)
@@ -23,10 +23,10 @@ class App:
         window.set_border_width(10)
 
         window.set_position(Gtk.WindowPosition.CENTER)
-        
+
         mainvbox = Gtk.VBox(spacing=6)
         window.add(mainvbox)
-        
+
         mainhbox = Gtk.HBox()
         mainvbox.add(mainhbox)
 
@@ -41,7 +41,6 @@ class App:
 
         player = Gtk.ComboBoxText()
         # TODO: This option should be dropped
-        player.append_text(_('Choose a setup :'))
         player.append_text(_('Indicator in Panel'))
         player.append_text(_('Part of the Volume Menu'))
         player.append_text(_('Don\'t show indicator'))
@@ -90,7 +89,7 @@ class App:
 
     def keys_change(self, player, settings, nswitch):
         index = player.get_active()
-        if index == 3:
+        if index == 2:
             nswitch.set_active(True)
             nswitch.set_sensitive(False)
         else:
