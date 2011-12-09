@@ -605,6 +605,8 @@ MusicIntBox.prototype = {
         this._mediaServerPlayer = new MediaServer2Player(owner);
         this._mediaServer = new MediaServer2(owner);
         this._prop = new Prop(owner);
+        this._appsys = Shell.AppSystem.get_default();
+        this._appobj = this._appsys.lookup_app(this._name + ".desktop");
 
         //Actor that holds everything
         this.actor = new St.BoxLayout({style_class: styleprefix + 'mib-track-box'});
@@ -633,15 +635,10 @@ MusicIntBox.prototype = {
             Lang.bind(this, function () { 
                 Main.overview.hide();
                 this._mediaServer.RaiseRemote(); 
-                windows = global.get_window_actors();
-                for (w = 0; w<windows.length; w++) {
-					windowm = windows[w].get_meta_window()
-					appm = windowm.get_wm_class().toLowerCase();
-					if (appm == this._name) {
-						Main.activateWindow(windowm);
-						break;
-					}
-				}
+                Mainloop.timeout_add(100, Lang.bind(this, function () {
+			    	windowm = this._appobj.get_windows()[0];
+				    Main.activateWindow(windowm);
+                }));
             }));
         this._spaceButton = new St.Bin({style_class: 'spaceb'});
         this._prevButton = new ControlButton('media-skip-backward', buttonsize,
@@ -1105,6 +1102,8 @@ VolumeMenuInt.prototype = {
         this._mediaServerPlayer = new MediaServer2Player(owner);
         this._mediaServer = new MediaServer2(owner);
         this._prop = new Prop(owner);
+        this._appsys = Shell.AppSystem.get_default();
+        this._appobj = this._appsys.lookup_app(this._name + ".desktop");
 		while(Main.panel._statusArea['volume']) {
             this.menu = Main.panel._statusArea['volume'];
             break;
@@ -1115,7 +1114,7 @@ VolumeMenuInt.prototype = {
         this.menu.menu.addMenuItem(this._separator, this.menu.menu.numMenuItems - 3);
         
         //Main Music Menu
-        this._mainMusicMenu = new PopupMenu.PopupBaseMenuItem({style_class: 'v-main-music-menu'});
+        this._mainMusicMenu = new PopupMenu.PopupBaseMenuItem({style_class: 'popup-menu-music'});
         
         this._playerTitle = new St.BoxLayout({style_class: 'v-music-player-title'});
         this._icon = new St.Icon({ icon_type: St.IconType.FULLCOLOR, icon_size: 16, icon_name: this._name});
@@ -1133,15 +1132,10 @@ VolumeMenuInt.prototype = {
         this._mainMusicMenu.connect('activate', Lang.bind(this, function() {
                 Main.overview.hide();
                 this._mediaServer.RaiseRemote(); 
-                windows = global.get_window_actors();
-                for (w = 0; w<windows.length; w++) {
-					windowm = windows[w].get_meta_window()
-					appm = windowm.get_wm_class().toLowerCase();
-					if (appm == this._name) {
-						Main.activateWindow(windowm);
-						break;
-					}
-				}
+                Mainloop.timeout_add(100, Lang.bind(this, function () {
+			    	windowm = this._appobj.get_windows()[0];
+				    Main.activateWindow(windowm);
+                }));
 		}));
         
         this.menu.menu.addMenuItem(this._mainMusicMenu, this.menu.menu.numMenuItems - 3);
