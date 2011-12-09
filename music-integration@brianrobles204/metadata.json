@@ -19,7 +19,8 @@
     "quodlibet",
     "rhythmbox",
     "rhythmbox3",
-    "xbmc"
+    "tomahawk",
+    "xbmc",
 ],
 "support_seek": [
     "amarok",
@@ -30,7 +31,8 @@
     "guayadeque",
     "quodlibet",
     "rhythmbox",
-    "rhythmbox3"
+    "rhythmbox3",
+    "tomahawk"
 ],
 
 "use_metadata_pref":false,
