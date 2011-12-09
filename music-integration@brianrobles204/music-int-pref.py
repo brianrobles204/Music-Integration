@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 from gi.repository import Gio, Gtk
 
@@ -11,6 +11,7 @@ class App:
         window = Gtk.Window()
         window.connect('destroy', lambda w: Gtk.main_quit())
         window.set_title('Music Integration Preferences')
+        window.set_icon_name(Gtk.STOCK_PREFERENCES)
         window.set_default_size(400, 160)        
         window.set_border_width(6)
 

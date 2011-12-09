@@ -41,8 +41,9 @@
 }
 .mib-track-box, .n-mib-track-box, .v-mib-track-box {
     padding:17px;
-    background-gradient-start: rgba(0,0,0,0.65);
-    background-gradient-end: rgba(0,0,0,0.7);
+    background-color: rgba(21,21,21,0.8);
+    color: #ededed;
+    text-shadow: rgba(0,0,0,0) 1px 1px 1px;
     border-radius: 4px;
 }
 .mib-track-info StLabel, .n-mib-track-info StLabel{
