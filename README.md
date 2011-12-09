@@ -59,11 +59,10 @@ And that's it. Log out and in, or restart the shell for it to take effect.
 2. Using a terminal, change your current directory to the extracted folder.
 3. Enter the following:
 
-    `./autogen.sh`
-    `./configure --prefix=/usr`
-    `make`
-    `sudo make install`
-
+    `# ./autogen.sh`<br />
+    `# ./configure --prefix=/usr`<br />
+    `# make`<br />
+    `# sudo make install`<br />
 
 4. Restart the shell (Alt+F2, enter r, press enter) or log out and in.
 5. Using Gnome Tweak Tool, enable the extension. `# gnome-tweak-tool`
