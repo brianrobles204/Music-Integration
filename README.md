@@ -64,6 +64,7 @@ And that's it. Log out and in, or restart the shell for it to take effect.
     make
     sudo make install
 
+
 4. Restart the shell (Alt+F2, enter r, press enter) or log out and in.
 5. Using Gnome Tweak Tool, enable the extension. `# gnome-tweak-tool`
 
