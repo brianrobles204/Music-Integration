@@ -15,6 +15,9 @@ const GLib = imports.gi.GLib;
 const Tweener = imports.ui.tweener;
 const Util = imports.misc.util;
 
+const Gettext = imports.gettext.domain('gnome-shell-extension-musicintegration');
+const _ = Gettext.gettext;
+
 /* global values */
 let icon_path = null;
 let compatible_players = null;
@@ -621,11 +624,11 @@ MusicIntBox.prototype = {
 
         //Track Information
         this._infos = new St.BoxLayout({vertical: true, style_class: styleprefix + 'mib-track-info'});
-        this._title = new St.Label({text: 'Unknown Title', style_class: 'mib-track-title'});
+        this._title = new St.Label({text: _('Unknown Title'), style_class: 'mib-track-title'});
         this._infos.add_actor(this._title);
-        this._artist = new St.Label({text: 'Unknown Artist'});
+        this._artist = new St.Label({text: _('Unknown Artist')});
         this._infos.add_actor(this._artist);
-        this._album = new St.Label({text: 'Unknown Album'});
+        this._album = new St.Label({text: _('Unknown Album')});
         this._infos.add_actor(this._album);
         this._infos.add_actor(this._trackControlHolder);
         this._trackInfoHolder.set_child(this._infos);
@@ -683,7 +686,7 @@ MusicIntBox.prototype = {
 
     _openPreferences: function() {
         Main.overview.hide();
-        Util.spawn([preferences_path]);
+        Util.spawn(["python", preferences_path]);
     },
 
     _setStatus: function(sender, status) {
@@ -707,11 +710,11 @@ MusicIntBox.prototype = {
 
     _setMetadata: function(sender, metadata) {
         if (metadata["xesam:artist"]) this._artist.text = metadata["xesam:artist"].toString();
-            else this._artist.text = "Artist";
+            else this._artist.text = _("Artist");
         if (metadata["xesam:album"]) this._album.text = metadata["xesam:album"].toString();
-            else this._album.text = "Album";
+            else this._album.text = _("Album");
         if (metadata["xesam:title"]) this._title.text = metadata["xesam:title"].toString();
-            else this._title.text = "Title";
+            else this._title.text = _("Title");
     },
 
     _getMetadata: function() {
@@ -883,14 +886,14 @@ MusicMenu.prototype = {
         this.addActor(this._mainMusicBox.getActor());
 
         //Volume
-        this._volume = new VolSliderItem("Music Volume", "audio-volume-high", "volume-slider", 0);
+        this._volume = new VolSliderItem(_("Music Volume"), "audio-volume-high", "volume-slider", 0);
         this._volume.connect('value-changed', Lang.bind(this, function(item) {
             this._mediaServerPlayer.setVolume(item._value);
         }));
         this.addMenuItem(this._volume);
 
         //Shuffle
-        this._shuffle = new ToggleItem("Shuffle", "media-playlist-shuffle", true, {style_class: 'shuffleitem'});
+        this._shuffle = new ToggleItem(_("Shuffle"), "media-playlist-shuffle", true, {style_class: 'shuffleitem'});
         this._shuffle.connect('toggled', Lang.bind(this, function(item) {
             this._mediaServerPlayer.setShuffle(item.state);
             this._updateSwitches();
@@ -898,7 +901,7 @@ MusicMenu.prototype = {
         this.addMenuItem(this._shuffle);
 
         //Repeat
-        this._repeat = new ToggleItem("Repeat", "media-playlist-repeat", true, {style_class: 'repeatitem'});
+        this._repeat = new ToggleItem(_("Repeat"), "media-playlist-repeat", true, {style_class: 'repeatitem'});
         this._repeat.connect('toggled', Lang.bind(this, function(item) {
             this._mediaServerPlayer.setRepeat(item.state);
             this._updateSwitches();
@@ -907,7 +910,7 @@ MusicMenu.prototype = {
 
         //Music Integration Preferences
         if (has_gsettings_schema) this.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        this._preferences = new TextImageItem("Music Integration Preferences", "system-run", false, 12, {style_class: "system-preferences"});
+        this._preferences = new TextImageItem(_("Preferences"), "system-run", false, 12, {style_class: "system-preferences"});
         this._preferences.connect('activate', Lang.bind(this, function(item) {
             this._openPreferences();
         }));
@@ -929,7 +932,7 @@ MusicMenu.prototype = {
 
     _openPreferences: function() {
         Main.overview.hide();
-        Util.spawn([preferences_path]);
+        Util.spawn(["python", preferences_path]);
     },
 
     _getIdentity: function() {
@@ -1448,22 +1451,22 @@ MusicIntegrationExtension.prototype = {
             this.volmenu = Main.panel._statusArea['volume'];
             break;
         }
-		MusicVolumeOption = new PopupMenu.PopupMenuItem("Music Integration Preferences");
+		MusicVolumeOption = new PopupMenu.PopupMenuItem(_("Preferences"));
         this.volmenu.menu.addMenuItem(MusicVolumeOption, this.volmenu.menu.numMenuItems - 1);
         MusicVolumeOption.connect('activate', Lang.bind(this, function() {
             Main.overview.hide();
-            Util.spawn([preferences_path]);
+            Util.spawn(["python", preferences_path]);
 		}));
 	},
 	
 	buildPlayer: function(owner) {
         let _children = Main.panel._rightBox.get_children();
-	    if(default_setup == 1) {
+	    if(default_setup == 0) {
 			MusicIndicators[owner] = new MusicIndicator(owner);
 	        Main.panel._rightBox.insert_actor(MusicIndicators[owner].getActor(), _children.length - 1);
 	        Main.panel._menus.addMenu(MusicIndicators[owner].getMenu());
 		}
-	    if(default_setup == 2) {
+	    if(default_setup == 1) {
 			MusicVolumePlayers[owner] = new VolumeMenuInt(owner);
 			if (!MusicVolumeOption && has_gsettings_schema) this.buildVolumeOption();
 		}

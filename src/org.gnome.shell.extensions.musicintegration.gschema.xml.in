@@ -8,14 +8,14 @@
 
     <key name="notification" type='b'>
       <default>true</default>
-      <summary>Notification</summary>
-      <description>Shows the notifications with controls.</description>
+      <_summary>Notification</_summary>
+      <_description>Shows the notifications with controls.</_description>
     </key>
 
     <key name="overlay" type='b'>
       <default>true</default>
-      <summary>Cover Overlay</summary>
-      <description>Shows the cover overlay on mouseover.</description>
+      <_summary>Cover Overlay</_summary>
+      <_description>Shows the cover overlay on mouseover.</_description>
     </key>
   </schema>
 </schemalist>

@@ -1,0 +1,96 @@
+# Galician translations for gnome-shell-extension-music-integration package.
+# Copyright (C) 2011 THE gnome-shell-extension-music-integration'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the gnome-shell-extension-music-integration package.
+# Fran Dieguez <frandieguez@gnome.org>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-shell-extension-music-integration 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-12-07 22:42+0100\n"
+"PO-Revision-Date: 2011-12-07 22:38+0100\n"
+"Last-Translator: Fran Dieguez <frandieguez@gnome.org>\n"
+"Language-Team: Galician <gnome-l10n-gl@gnome.org>\n"
+"Language: gl_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: ../src/extension.js:716
+msgid "Artist"
+msgstr "Artista"
+
+#: ../src/extension.js:718
+msgid "Album"
+msgstr "Álbum"
+
+#: ../src/extension.js:720
+msgid "Title"
+msgstr "Título"
+
+#. Volume
+#: ../src/extension.js:892
+msgid "Music Volume"
+msgstr "Volume da música"
+
+#. Shuffle
+#: ../src/extension.js:899
+msgid "Shuffle"
+msgstr "Aleatorio"
+
+#. Repeat
+#: ../src/extension.js:907
+msgid "Repeat"
+msgstr "Repetir"
+
+#: ../src/extension.js:916 ../src/extension.js:1460
+msgid "Preferences"
+msgstr "Preferencias"
+
+#: ../src/music-int-pref.py:18
+msgid "Music Integration Preferences"
+msgstr "Preferencias da integración de música"
+
+#: ../src/music-int-pref.py:43
+msgid "Place indicator as:"
+msgstr "Dispor o indicator como:"
+
+#. TODO: This option should be dropped {{
+#: ../src/music-int-pref.py:56
+msgid "Choose a setup :"
+msgstr "Seleccione unha configuración:"
+
+#. }}
+#: ../src/music-int-pref.py:58
+msgid "Indicator in Panel"
+msgstr "Indicador no panel"
+
+#: ../src/music-int-pref.py:59
+msgid "Part of the Volume Menu"
+msgstr "Parte do menú de volume"
+
+#: ../src/music-int-pref.py:60
+msgid "Don't show indicator"
+msgstr "Non mostrar o indicador"
+
+#: ../src/music-int-pref.py:73
+msgid "Show notifications"
+msgstr "Mostrar notificacións"
+
+#: ../src/music-int-pref.py:85
+msgid "Show play time over cover art"
+msgstr "Mostrar tempo de reprodución sobre a carátula"
+
+#: ../src/music-int-pref.py:100
+msgid "Quit"
+msgstr "Saír"
+
+#~ msgid "Choose your default setup :"
+#~ msgstr "Seleccione a configuración predeterminada:"
+
+#~ msgid "Notifications only"
+#~ msgstr "Só notificacións"
+
+#~ msgid "Cover Art Time Overlay"
+#~ msgstr "Mostrar o tempo sobre a carátula"

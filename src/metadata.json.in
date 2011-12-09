@@ -1,9 +1,12 @@
 {
-"uuid": "music-integration@brianrobles204",
+"uuid": "@UUID@",
 "name": "Music Integration",
 "description": "Integrate your music into Gnome Shell.",
 "original-author": "Brian Robles",
-"shell-version": [ "3.2" ],
+"shell-version": [ "3.2", "3.3.2" ],
+"locale": "@LOCALEDIR@",
+"path": "@EXTENSIONDIR@",
+"url": "@URL@",
 "players": [
     "amarok",
     "banshee",
@@ -19,6 +22,8 @@
     "quodlibet",
     "rhythmbox",
     "rhythmbox3",
+    "spotify",
+    "tomahawk",
     "xbmc"
 ],
 "support_seek": [
@@ -30,16 +35,15 @@
     "guayadeque",
     "quodlibet",
     "rhythmbox",
-    "rhythmbox3"
+    "rhythmbox3",
+    "tomahawk",
+    "spotify"
 ],
 
 "use_metadata_pref":false,
 "pref_setup":"1",
 "pref_notification":true,
-"pref_overlay":true,
+"pref_overlay":true
 
-"locale": "/usr/share/locale",
-"path": "~/.local/share/gnome-shell/extensions/music-integration@brianrobles204",
-"url": "https://github.com/brianrobles204/Music-Integration"
 }
 
