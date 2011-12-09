@@ -30,7 +30,7 @@ Note: Audacious is unsupported because it uses an obsolete version of MPRIS. Sor
 ----
 
 ### Screenshot
-![Screenshot](https://github.com/brianrobles204/Music-Integration/raw/master/screenshot.png)
+![Screenshot](https://github.com/brianrobles204/Music-Integration/raw/master/data/screenshot.png)
 
 ----
 
@@ -56,11 +56,16 @@ And that's it. Log out and in, or restart the shell for it to take effect.
 #### Manual Installation
 
 1. Download and extract.
-2. Put the folder `music-integration@brianrobles204` in `~/.local/share/gnome-shell/extensions/`
-3. As root, put `org.gnome.shell.extensions.musicintegration.gschema.xml` in `/usr/share/glib-2.0/schemas/`
-4. As root, in terminal, run: `# glib-compile-schemas /usr/share/glib-2.0/schemas/`
-5. Restart the shell (Alt+F2, enter r, press enter) or log out and in.
-6. Using Gnome Tweak Tool, enable the extension. `# gnome-tweak-tool`
+2. Using a terminal, change your current directory to the extracted folder.
+3. Enter the following:
+
+    ./autogen.sh
+    ./configure --prefix=/usr
+    make
+    sudo make install
+
+4. Restart the shell (Alt+F2, enter r, press enter) or log out and in.
+5. Using Gnome Tweak Tool, enable the extension. `# gnome-tweak-tool`
 
 ----
 
