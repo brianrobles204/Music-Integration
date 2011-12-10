@@ -43,7 +43,7 @@ Note: Audacious is unsupported because it uses an obsolete version of MPRIS. Sor
 
 #### Installation through the Official Gnome website
 
-You can try the extension instantly through the [Gnome Extensions Page] (https://extensions.gnome.org/extension/30/music-integration/). <br/>
+You can try the extension instantly through the [Gnome Extensions Page](https://extensions.gnome.org/extension/30/music-integration/). <br/>
 Unfortunately, installing the extension this way will have the preferences option disabled by default. <br/>
 To enable, simply copy-paste the following lines in a terminal, one at a time:
 
@@ -70,6 +70,6 @@ And that's it. Log out and in, or restart the shell for it to take effect.
 ----
 
 ### Authors
-Made by Brian Robles (brianrobles204@gmail.com) <br/>
-This extension is a fork of Jean-Philippe Braun's extension (eon@patapon.info)<br/>
-Original: https://github.com/eonpatapon/gnome-shell-extensions-mediaplayer<br/>
+Made by [Brian Robles](brianrobles204@gmail.com) <br/>
+with some help from frandieguez, oxayoti <br/>
+This extension is a fork of [Jean-Philippe Braun](eon@patapon.info)'s [extension](https://github.com/eonpatapon/gnome-shell-extensions-mediaplayer)<br/>
