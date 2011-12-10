@@ -73,6 +73,6 @@ And that's it. Log out and in, or restart the shell for it to take effect.
 ----
 
 ### Authors
-Made by [Brian Robles] (brianrobles204@gmail.com) <br/>
+Made by [Brian Robles] (mailto:brianrobles204@gmail.com) <br/>
 with some help from frandieguez, oxayoti <br/>
-This extension is a fork of [Jean-Philippe Braun] (eon@patapon.info)'s [extension] (https://github.com/eonpatapon/gnome-shell-extensions-mediaplayer)<br/>
+This extension is a fork of [Jean-Philippe Braun] (mailto:eon@patapon.info)'s [extension] (https://github.com/eonpatapon/gnome-shell-extensions-mediaplayer)<br/>
