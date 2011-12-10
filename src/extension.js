@@ -1041,6 +1041,12 @@ MusicIndicator.prototype = {
         this._player = new MusicMenu(owner);
         this.menu.addMenuItem(this._player);
         this._player._setCoverUpdate(false);
+        
+        //Add object to interface
+        let userMenu = Main.panel._statusArea['userMenu'].actor;
+        let children = Main.panel._rightBox.get_children();
+	    Main.panel._rightBox.insert_actor(this.actor, children.indexOf(userMenu));
+	    Main.panel._menus.addMenu(this.menu);
 
         //Update and start listening
         this._getStatus();
@@ -1460,11 +1466,8 @@ MusicIntegrationExtension.prototype = {
 	},
 	
 	buildPlayer: function(owner) {
-        let _children = Main.panel._rightBox.get_children();
 	    if(default_setup == 0) {
 			MusicIndicators[owner] = new MusicIndicator(owner);
-	        Main.panel._rightBox.insert_actor(MusicIndicators[owner].getActor(), _children.length - 1);
-	        Main.panel._menus.addMenu(MusicIndicators[owner].getMenu());
 		}
 	    if(default_setup == 1) {
 			MusicVolumePlayers[owner] = new VolumeMenuInt(owner);
