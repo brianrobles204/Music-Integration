@@ -8,21 +8,24 @@ All these options are configurable through a nice GUI tool.
 
 Tested Players:
 
+* Amarok
 * Banshee - with DBus Mpris plugin
-* Rhythmbox - with DBus Mpris plugin
 * Clementine
+* gmusicbrowser
+* Google Music Frame / Nuvola
 * Guayadeque
 * Quodlibet - with DBus Mpris plugin
-* Google Music Frame / Nuvola
+* Rhythmbox - with DBus Mpris plugin
 
 Other Supported Players (may be untested or partially supported):
 
-* Amarok
 * Beatbox
 * DeaDBeeF
 * mpd
 * Pithos
 * Pragha
+* Spotify
+* Tomahawk
 * xbmc
 
 Note: Audacious is unsupported because it uses an obsolete version of MPRIS. Sorry...

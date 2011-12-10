@@ -14,9 +14,10 @@
     "clementine",
     "deadbeef",
     "googlemusicframe",
-    "nuvolaplayer",
+    "gmusicbrowser",
     "guayadeque",
     "mpd",
+    "nuvolaplayer",
     "pithos",
     "pragha",
     "quodlibet",
@@ -32,12 +33,13 @@
     "beatbox",
     "clementine",
     "deadbeef",
+    "gmusicbrowser",
     "guayadeque",
     "quodlibet",
     "rhythmbox",
     "rhythmbox3",
-    "tomahawk",
-    "spotify"
+    "spotify",
+    "tomahawk"
 ],
 
 "use_metadata_pref":false,
