@@ -67,12 +67,12 @@ And that's it. Log out and in, or restart the shell for it to take effect.
     `# make`<br />
     `# sudo make install`<br />
 
-4. Restart the shell (Alt+F2, enter r, press enter) or log out and in.
+4. Restart the shell (Alt+F2, enter r, press return) or log out and in.
 5. Using Gnome Tweak Tool, enable the extension. `# gnome-tweak-tool`
 
 ----
 
 ### Authors
-Made by [Brian Robles](brianrobles204@gmail.com) <br/>
+Made by [Brian Robles] (brianrobles204@gmail.com) <br/>
 with some help from frandieguez, oxayoti <br/>
-This extension is a fork of [Jean-Philippe Braun](eon@patapon.info)'s [extension](https://github.com/eonpatapon/gnome-shell-extensions-mediaplayer)<br/>
+This extension is a fork of [Jean-Philippe Braun] (eon@patapon.info)'s [extension] (https://github.com/eonpatapon/gnome-shell-extensions-mediaplayer)<br/>
