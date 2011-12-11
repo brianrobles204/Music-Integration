@@ -25,7 +25,8 @@
     "rhythmbox3",
     "spotify",
     "tomahawk",
-    "xbmc"
+    "xbmc",
+    "xnoise"
 ],
 "support_seek": [
     "amarok",
@@ -39,7 +40,8 @@
     "rhythmbox",
     "rhythmbox3",
     "spotify",
-    "tomahawk"
+    "tomahawk",
+    "xnoise"
 ],
 
 "use_metadata_pref":false,
