@@ -64,7 +64,10 @@ const MediaServer2IFace = {
                    access: 'read'},
                  { name: 'Indentity',
                    signature: 's',
-                   access: 'read'}],
+                   access: 'read'},
+                 { name: 'DesktopEntry',
+                   signature: 's',
+                   access: 'read'}]
 };
 
 const MediaServer2PlayerIFace = {
@@ -151,6 +154,13 @@ MediaServer2.prototype = {
 		    function(identity, ex) {
 				if (!ex)
 				    callback(this, identity)
+		    }));
+	},
+    getDesktopEntry: function(callback) {
+		this.GetRemote('DesktopEntry', Lang.bind(this, 
+		    function(entry, ex) {
+				if (!ex)
+				    callback(this, entry)
 		    }));
 	},
     getRaise: function(callback) {
@@ -671,6 +681,7 @@ MusicIntBox.prototype = {
         //Update and start listening
         this._getStatus();
         this._getMetadata();
+        this._getDesktopEntry();
 
         this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
             if (value["PlaybackStatus"])
@@ -683,6 +694,16 @@ MusicIntBox.prototype = {
     getActor: function() {
         return this.actor;
     },
+    
+    _getDesktopEntry: function() {
+        this._mediaServer.getDesktopEntry(Lang.bind(this, 
+            function(sender, entry) {
+			    if (entry) {
+			        this._appobj = this._appsys.lookup_app(entry + ".desktop");
+			    }
+			}
+		));
+	},
 
     _openPreferences: function() {
         Main.overview.hide();
@@ -1202,6 +1223,9 @@ MusicNotification.prototype = {
 
     _init: function(source, owner, title, banner, params) {
         this._name = owner.split('.')[3];
+        this._appsys = Shell.AppSystem.get_default();
+        this._appobj = this._appsys.lookup_app(this._name + ".desktop");
+        
         MessageTray.Notification.prototype._init.call(this, source, title, banner, params);
         this._table.width = 460;
         this._mainHolder = new St.Bin({x_align: St.Align.START, style_class: "n-holder"});
@@ -1225,14 +1249,10 @@ MusicNotification.prototype = {
         this.emit('done-displaying');
         Main.overview.hide();
         Util.spawn([app]);
-        windows = global.get_window_actors();
-        for (w = 0; w<windows.length; w++) {
-		    windowm = windows[w].get_meta_window()
-			appm = windowm.get_wm_class().toLowerCase();
-			if (appm == this._name) {
-				Main.activateWindow(windowm);
-		    }
-	    }
+        Mainloop.timeout_add(100, Lang.bind(this, function () {
+		   	windowm = this._appobj.get_windows()[0];
+			Main.activateWindow(windowm);
+        }));
     }
 };
 
@@ -1256,6 +1276,8 @@ MusicSource.prototype = {
         this._mediaServerPlayer = new MediaServer2Player(owner);
         this._mediaServer = new MediaServer2(owner);
         this._prop = new Prop(owner);
+        this._appsys = Shell.AppSystem.get_default();
+        this._appobj = this._appsys.lookup_app(this._name + ".desktop");
 
         MessageTray.Source.prototype._init.call(this, this._getName() + " Integration");
         this._setSummaryIcon(this.createMusicIcon());
@@ -1270,19 +1292,11 @@ MusicSource.prototype = {
 
         this._propchange = this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
 	        if (value["Metadata"]) {
-                windows = global.get_window_actors();
-                for (w = 0; w<windows.length; w++) {
-		            windowm = windows[w].get_meta_window()
-					appm = windowm.get_wm_class().toLowerCase();
-			        if (appm == this._name) {
+		   	        windowm = this._appobj.get_windows()[0];
 			    	    if (windowm.has_focus()) {
 							this._focusnotify = false;
-							break;
 						} else this._focusnotify = true;
-		            }
-		            else this._focusnotify = true
 	            }
-            }
 	        if (value["Metadata"] && this._update) {
                 this._setMetadata(iface, value["Metadata"]);
                 if (this._focusnotify) this.notify(MusicNotifications[this._owner]);
