@@ -1112,7 +1112,7 @@ VolumeMenuInt.prototype = {
         
         //Separator
         this._separator = new PopupMenu.PopupSeparatorMenuItem();
-        this.menu.menu.addMenuItem(this._separator, this.menu.menu.numMenuItems - 3);
+        this.menu.menu.addMenuItem(this._separator, this.menu.menu.numMenuItems - 2);
         
         //Main Music Menu
         this._mainMusicMenu = new PopupMenu.PopupBaseMenuItem({style_class: 'popup-menu-music'});
@@ -1139,7 +1139,7 @@ VolumeMenuInt.prototype = {
                 }));
 		}));
         
-        this.menu.menu.addMenuItem(this._mainMusicMenu, this.menu.menu.numMenuItems - 3);
+        this.menu.menu.addMenuItem(this._mainMusicMenu, this.menu.menu.numMenuItems - 2);
         this.menu.menu.connect('open-state-changed', Lang.bind(this, this._extraOpenStateChanged));
 
         //Update and start listening
