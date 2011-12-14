@@ -1223,6 +1223,7 @@ MusicNotification.prototype = {
 
     _init: function(source, owner, title, banner, params) {
         this._name = owner.split('.')[3];
+        this._mediaServer = new MediaServer2(owner);
         this._appsys = Shell.AppSystem.get_default();
         this._appobj = this._appsys.lookup_app(this._name + ".desktop");
         
@@ -1248,7 +1249,7 @@ MusicNotification.prototype = {
         this.emit('clicked');
         this.emit('done-displaying');
         Main.overview.hide();
-        Util.spawn([app]);
+        this._mediaServer.RaiseRemote(); 
         Mainloop.timeout_add(100, Lang.bind(this, function () {
 		   	windowm = this._appobj.get_windows()[0];
 			Main.activateWindow(windowm);
@@ -1293,8 +1294,9 @@ MusicSource.prototype = {
         this._propchange = this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
 	        if (value["Metadata"]) {
 		   	        windowm = this._appobj.get_windows()[0];
-			    	    if (windowm.has_focus()) {
-							this._focusnotify = false;
+			    	    if (windowm) {
+							if (windowm.has_focus()) this._focusnotify = false;
+							else this._focusnotify = true;
 						} else this._focusnotify = true;
 	            }
 	        if (value["Metadata"] && this._update) {
