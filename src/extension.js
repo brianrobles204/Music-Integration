@@ -1249,7 +1249,11 @@ MusicNotification.prototype = {
         this.emit('clicked');
         this.emit('done-displaying');
         Main.overview.hide();
+<<<<<<< HEAD
         this._mediaServer.RaiseRemote(); 
+=======
+        Util.spawn([app]);
+>>>>>>> updated raise and focus mechanism
         Mainloop.timeout_add(100, Lang.bind(this, function () {
 		   	windowm = this._appobj.get_windows()[0];
 			Main.activateWindow(windowm);
@@ -1294,9 +1298,14 @@ MusicSource.prototype = {
         this._propchange = this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
 	        if (value["Metadata"]) {
 		   	        windowm = this._appobj.get_windows()[0];
+<<<<<<< HEAD
 			    	    if (windowm) {
 							if (windowm.has_focus()) this._focusnotify = false;
 							else this._focusnotify = true;
+=======
+			    	    if (windowm.has_focus()) {
+							this._focusnotify = false;
+>>>>>>> updated raise and focus mechanism
 						} else this._focusnotify = true;
 	            }
 	        if (value["Metadata"] && this._update) {
