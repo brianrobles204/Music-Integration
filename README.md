@@ -20,6 +20,7 @@ Tested Players:
 * Guayadeque
 * Quodlibet - with DBus Mpris plugin
 * Rhythmbox - with DBus Mpris plugin
+* Xnoise
 
 Other Supported Players (may be untested or partially supported):
 
