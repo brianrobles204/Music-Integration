@@ -1073,14 +1073,6 @@ MusicIndicator.prototype = {
         this._player._setCoverUpdate(open);
         if(MusicSources[this._owner]) MusicSources[this._owner]._setUpdate(!open);
     },
-    
-    getActor: function() {
-		return this.actor;
-	},
-	
-	getMenu: function() {
-		return this.menu;
-	},
 
     destroy: function() {
         this._prop.disconnect(this._propchange);
