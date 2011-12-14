@@ -6,6 +6,9 @@ Gnome panel when it finds a music player and creates a nice notification when th
 You also have an option to integrate the player into the volume menu, much like in Ubuntu's setup.
 All these options are configurable through a nice GUI tool.
 
+Supported Gnome Versions:
+* Gnome Shell 3.2 and higher
+
 Tested Players:
 
 * Amarok
