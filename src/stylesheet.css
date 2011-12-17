@@ -32,6 +32,10 @@
 
 
 /****Main Indicator****/
+.music-label {
+    padding-left: 10px;
+    max-width: 250px;
+}
 .mib-track-title{
     font-weight: bold;
 }
