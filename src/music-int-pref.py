@@ -15,6 +15,7 @@ class App:
     def __init__(self):
         settings = Gio.Settings.new(self.BASE_KEY)
         nswitch = Gtk.Switch()
+        mlswitch = Gtk.Switch()
 
         window = Gtk.Window()
         window.connect('destroy', lambda w: Gtk.main_quit())
@@ -44,15 +45,15 @@ class App:
         hplayerbox = Gtk.Box(spacing=0)
         vbox.pack_start(hplayerbox, False, True, 0)
 
-        labelT = Gtk.Label(_("Place indicator as:"))
+        labelT = Gtk.Label(_("Place Music as:"))
         hplayerbox.pack_start(labelT, False, True, 0)
 
         player = Gtk.ComboBoxText()
-        # TODO: This option should be dropped
-        player.append_text(_('Indicator in Panel'))
+        player.append_text(_('Indicator in Right Panel'))
+        player.append_text(_('Indicator in Center Panel'))
         player.append_text(_('Part of the Volume Menu'))
-        player.append_text(_('Don\'t show indicator'))
-        player.connect('changed', self.keys_change, settings, nswitch)
+        player.append_text(_('Don\'t show in Panel'))
+        player.connect('changed', self.keys_change, settings, nswitch, mlswitch)
         player.set_active(int(settings.get_string("setup")))
         hplayerbox.pack_end(player, False, True, 2)
 
@@ -61,7 +62,6 @@ class App:
 
         nhbox = Gtk.Box(spacing=0)
         vbox.pack_start(nhbox, False, True, 0)
-        # nhbox.set_size_request(300, 30)
 
         nlabel = Gtk.Label(_("Show notifications"))
         nhbox.pack_start(nlabel, False, True, 0)
@@ -69,6 +69,16 @@ class App:
         nswitch.set_active(settings.get_boolean("notification"))
         nswitch.connect('notify::active', self.n_change, settings)
         nhbox.pack_end(nswitch, False, True, 2)
+
+        mlhbox = Gtk.Box(spacing=0)
+        vbox.pack_start(mlhbox, False, True, 0)
+
+        mllabel = Gtk.Label(_("Show song name in the panel"))
+        mlhbox.pack_start(mllabel, False, True, 0)
+
+        mlswitch.set_active(settings.get_boolean("musiclabel"))
+        mlswitch.connect('notify::active', self.ml_change, settings)
+        mlhbox.pack_end(mlswitch, False, True, 2)
 
         cohbox = Gtk.Box(spacing=0)
         vbox.pack_start(cohbox, False, True, 0)
@@ -95,9 +105,19 @@ class App:
 
         return
 
-    def keys_change(self, player, settings, nswitch):
+    def keys_change(self, player, settings, nswitch, mlswitch):
         index = player.get_active()
-        if index == 2:
+        if index == 0:
+            mlswitch.set_active(False)
+            mlswitch.set_sensitive(True)
+        elif index == 1:
+            mlswitch.set_active(True)
+            mlswitch.set_sensitive(True)
+        elif (index == 2) or (index == 3):
+            mlswitch.set_active(False)
+            mlswitch.set_sensitive(False)
+            
+        if index == 3:
             nswitch.set_active(True)
             nswitch.set_sensitive(False)
         else:
@@ -110,8 +130,12 @@ class App:
         settings.set_boolean("overlay", coswitch.get_active())
         return
 
-    def n_change(self, coswitch, value, settings):
-        settings.set_boolean("notification", coswitch.get_active())
+    def ml_change(self, mlswitch, value, settings):
+        settings.set_boolean("musiclabel", mlswitch.get_active())
+        return
+
+    def n_change(self, nswitch, value, settings):
+        settings.set_boolean("notification", nswitch.get_active())
         return
 
 

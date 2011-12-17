@@ -26,7 +26,8 @@ let coverpathmusic = null;
 let coverpathpause = null;
 let coverpathplay = null;
 let preferences_path = null;
-let default_setup = "1";
+let default_setup = "0";
+let music_label = false;
 let cover_overlay = true;
 let notification_option = true;
 let has_gsettings_schema = false;
@@ -1035,6 +1036,7 @@ MusicIndicator.prototype = {
         //DBus stuff
         this._owner = owner;
         this._name = this._owner.split('.')[3];
+        this._identity = this._name.charAt(0).toUpperCase() + this._name.slice(1);
         this._mediaServerPlayer = new MediaServer2Player(owner);
         this._mediaServer = new MediaServer2(owner);
         this._prop = new Prop(owner);
@@ -1055,6 +1057,11 @@ MusicIndicator.prototype = {
         this._newIconActor.add_actor(this._img);
         this._img.set_position(3,0);
         
+        if(music_label) {
+            this._musiclabel = new St.Label({text: this._identity, style_class: "music-label"});
+            this._newIconActor.add_actor(this._musiclabel);
+	    };
+        
         this.actor.remove_actor(this._iconActor);
         this.actor.add_actor(this._newIconActor);
 
@@ -1064,15 +1071,24 @@ MusicIndicator.prototype = {
         this._player._setCoverUpdate(false);
         
         //Add object to interface
-        let userMenu = Main.panel._statusArea['userMenu'].actor;
-        let children = Main.panel._rightBox.get_children();
-	    Main.panel._rightBox.insert_actor(this.actor, children.indexOf(userMenu));
-	    Main.panel._menus.addMenu(this.menu);
+        if (default_setup == 0) {
+            let userMenu = Main.panel._statusArea['userMenu'].actor;
+            let children = Main.panel._rightBox.get_children();
+    	    Main.panel._rightBox.insert_actor(this.actor, children.indexOf(userMenu));
+	        Main.panel._menus.addMenu(this.menu);
+	    } else {
+            let children = Main.panel._centerBox.get_children();
+    	    Main.panel._centerBox.insert_actor(this.actor, children.length);
+	        Main.panel._menus.addMenu(this.menu);
+		}
 
         //Update and start listening
         this._getStatus();
+        this._getIdentity();
 
         this._propchange = this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
+			if (value["Metadata"])
+			    this._setMetadata(iface, value["Metadata"]);
             if (value["PlaybackStatus"])
                 this._setStatus(iface, value["PlaybackStatus"]);
         }));
@@ -1087,6 +1103,28 @@ MusicIndicator.prototype = {
             this._setStatus
         ));
     },
+
+    _setMetadata: function(sender, metadata) {
+        if (music_label) {
+            if (metadata["xesam:title"]) this._musiclabel.text = metadata["xesam:title"].toString();
+            else this._musiclabel.text = this._identity;
+		}
+    },
+
+    _getMetadata: function() {
+        this._mediaServerPlayer.getMetadata(Lang.bind(this,
+            this._setMetadata
+        ));
+    },
+    
+    _getIdentity: function() {
+        this._mediaServer.getIdentity(Lang.bind(this, 
+            function(sender, identity) {
+			    this._identity = identity;
+			    this._getMetadata();
+			}
+		));
+	},
 
     _onOpenStateChanged: function(menu, open) {
         if (open) this.actor.add_style_pseudo_class('active');
@@ -1421,11 +1459,13 @@ MusicIntegrationExtension.prototype = {
             if(this._schema.get_string("setup")) default_setup = this._schema.get_string("setup");
             if(this._schema.get_boolean("overlay")) cover_overlay = this._schema.get_boolean("overlay");
             if(this._schema.get_boolean("notification")) notification_option = this._schema.get_boolean("notification");
+            if(this._schema.get_boolean("musiclabel")) music_label = this._schema.get_boolean("musiclabel");
     
             this._schema.connect('changed', Lang.bind(this, function(schema, key){
                 if(key == "setup") default_setup = this._schema.get_string("setup");
                 if(key == "overlay") cover_overlay = this._schema.get_boolean("overlay");
                 if(key == "notification") notification_option = this._schema.get_boolean("notification");
+                if(key == "musiclabel") music_label = this._schema.get_boolean("musiclabel");
                 if (MusicEnabled) {
                     this.disable(); this.enable();
 	    	    }
@@ -1434,6 +1474,7 @@ MusicIntegrationExtension.prototype = {
             default_setup = metadata.pref_setup;
             cover_overlay = metadata.pref_overlay;
             notification_option = metadata.pref_notification;
+            music_label = metadata.pref_musiclabel;
 	    }
         
         //Start listening for music players to integrate.
@@ -1485,10 +1526,10 @@ MusicIntegrationExtension.prototype = {
 	},
 	
 	buildPlayer: function(owner) {
-	    if(default_setup == 0) {
+	    if(default_setup == 0 || default_setup == 1) {
 			MusicIndicators[owner] = new MusicIndicator(owner);
 		}
-	    if(default_setup == 1) {
+	    if(default_setup == 2) {
 			MusicVolumePlayers[owner] = new VolumeMenuInt(owner);
 			if (!MusicVolumeOption && has_gsettings_schema) this.buildVolumeOption();
 		}

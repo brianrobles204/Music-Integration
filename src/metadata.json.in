@@ -45,9 +45,10 @@
 ],
 
 "use_metadata_pref":false,
-"pref_setup":"1",
+"pref_setup":"0",
 "pref_notification":true,
-"pref_overlay":true
+"pref_overlay":true,
+"pref_musiclabel":false
 
 }
 
