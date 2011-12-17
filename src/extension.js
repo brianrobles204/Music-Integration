@@ -1007,7 +1007,6 @@ MusicMenu.prototype = {
 
     _setStatus: function(sender, status) {
         this._playerStatus = status;
-        //this._playerTitle.setImage("music-" + status.toLowerCase());
         this._setName(status);
     },
 
@@ -1040,6 +1039,7 @@ MusicIndicator.prototype = {
         this._mediaServerPlayer = new MediaServer2Player(owner);
         this._mediaServer = new MediaServer2(owner);
         this._prop = new Prop(owner);
+        this._value = 1;
 
         //Icon in Panel
         this._newIconActor = new St.BoxLayout();
@@ -1085,14 +1085,54 @@ MusicIndicator.prototype = {
         //Update and start listening
         this._getStatus();
         this._getIdentity();
+        this._getVolume();
 
         this._propchange = this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
+            if (value["Volume"])
+                this._setVolume(iface, value["Volume"]);
 			if (value["Metadata"])
 			    this._setMetadata(iface, value["Metadata"]);
             if (value["PlaybackStatus"])
                 this._setStatus(iface, value["PlaybackStatus"]);
         }));
+        
+        this.actor.connect('scroll-event', Lang.bind(this, this._onScrollEvent));
     },
+    
+    _onScrollEvent: function(actor, event) {
+        let direction = event.get_scroll_direction();
+
+        if (direction == Clutter.ScrollDirection.DOWN) {
+            this._value = Math.max(0, this._value - PopupMenu.SLIDER_SCROLL_STEP);
+        }
+        else if (direction == Clutter.ScrollDirection.UP) {
+            this._value = Math.min(1, this._value + PopupMenu.SLIDER_SCROLL_STEP);
+        }
+
+        this._mediaServerPlayer.setVolume(this._value);
+	},
+
+    _onButtonPress: function(actor, event) {
+		let button = event.get_button();
+        if (!this.menu.isOpen) {
+            let monitor = Main.layoutManager.primaryMonitor;
+            this.menu.actor.style = ('max-height: ' +
+                                     Math.round(monitor.height - Main.panel.actor.height) +
+                                     'px;');
+        }
+        if (button == 2) this._mediaServerPlayer.PlayPauseRemote();
+        else this.menu.toggle();
+    },
+    
+    _setVolume: function(sender, volume) {
+		this._value = volume;
+	},
+	
+	_getVolume: function() {
+        this._mediaServerPlayer.getVolume(Lang.bind(this,
+            this._setVolume
+        ));
+	},
 
     _setStatus: function(sender, status) {
         this._img.filename = icon_path + 'music-' + status.toLowerCase() + '.svg';
@@ -1208,7 +1248,17 @@ VolumeMenuInt.prototype = {
             if (value["PlaybackStatus"])
                 this._setStatus(iface, value["PlaybackStatus"]);
         }));
+        
+        this._middleClick = this.menu.actor.connect('button-press-event', Lang.bind(this, this._onButtonPress));
 	},
+
+    _onButtonPress: function(actor, event) {
+		let button = event.get_button();
+        if (button == 2) {
+			this._mediaServerPlayer.PlayPauseRemote();
+		    this.menu.menu.toggle();
+	    }
+    },
 	
 	_extraOpenStateChanged: function(menu, open) {
         this._mainMusicBox._trackCoverArt._setUpdate(open);
@@ -1239,6 +1289,7 @@ VolumeMenuInt.prototype = {
 		this._playerTitle.destroy();
 		this._mainMusicMenu.destroy();
 		this._prop.disconnect(this._propchange);
+		this.menu.actor.disconnect(this._middleClick);
 	}
 }
  

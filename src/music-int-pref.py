@@ -63,7 +63,7 @@ class App:
         nhbox = Gtk.Box(spacing=0)
         vbox.pack_start(nhbox, False, True, 0)
 
-        nlabel = Gtk.Label(_("Show notifications"))
+        nlabel = Gtk.Label(_("Notifications"))
         nhbox.pack_start(nlabel, False, True, 0)
 
         nswitch.set_active(settings.get_boolean("notification"))
@@ -73,7 +73,7 @@ class App:
         mlhbox = Gtk.Box(spacing=0)
         vbox.pack_start(mlhbox, False, True, 0)
 
-        mllabel = Gtk.Label(_("Show song name in the panel"))
+        mllabel = Gtk.Label(_("Song name in the panel"))
         mlhbox.pack_start(mllabel, False, True, 0)
 
         mlswitch.set_active(settings.get_boolean("musiclabel"))
@@ -83,7 +83,7 @@ class App:
         cohbox = Gtk.Box(spacing=0)
         vbox.pack_start(cohbox, False, True, 0)
 
-        colabel = Gtk.Label(_("Show play time over cover art"))
+        colabel = Gtk.Label(_("Time over cover art"))
         cohbox.pack_start(colabel, False, True, 0)
 
         coswitch = Gtk.Switch()
