@@ -36,11 +36,8 @@
     padding-left: 10px;
     max-width: 250px;
 }
-.mib-track-title, .mib-track-stopname{
+.mib-track-title{
     font-weight: bold;
-}
-.mib-track-stopname{
-    padding-top: 7px;
 }
 .mib-track-info-holder, .v-mib-track-info-holder, .n-mib-track-info-holder{
     padding-left: 10px;

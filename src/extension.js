@@ -619,6 +619,7 @@ MusicIntBox.prototype = {
         this._mediaServerPlayer = new MediaServer2Player(owner);
         this._mediaServer = new MediaServer2(owner);
         this._prop = new Prop(owner);
+        this._identity = this._name.charAt(0).toUpperCase() + this._name.slice(1);
         this._appsys = Shell.AppSystem.get_default();
         this._appobj = this._appsys.lookup_app(this._name + ".desktop");
         this._playerstate = true;
@@ -638,13 +639,12 @@ MusicIntBox.prototype = {
 
         //Track Information
         this._infos = new St.BoxLayout({vertical: true, style_class: styleprefix + 'mib-track-info'});
-        this._title = new St.Label({text: _('Unknown Title'), style_class: 'mib-track-title'});
+        this._title = new St.Label({text: this._identity, style_class: 'mib-track-title'});
         this._infos.add_actor(this._title);
-        this._artist = new St.Label({text: _('Unknown Artist')});
+        this._artist = new St.Label({text: _('Artist')});
         this._infos.add_actor(this._artist);
-        this._album = new St.Label({text: _('Unknown Album')});
+        this._album = new St.Label({text: _('Album')});
         this._infos.add_actor(this._album);
-        this._stopname = new St.Label({text: 'Rhythmbox', style_class: 'mib-track-stopname'});
         this._infos.add_actor(this._trackControlHolder);
         this._trackInfoHolder.set_child(this._infos);
 
@@ -687,6 +687,7 @@ MusicIntBox.prototype = {
         this._getStatus();
         this._getMetadata();
         this._getDesktopEntry();
+        this._getIdentity();
 
         this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
             if (value["PlaybackStatus"])
@@ -770,14 +771,24 @@ MusicIntBox.prototype = {
             this._setStatus
         ));
     },
+    
+    _setIdentity: function(sender, identity) {
+		this._identity = identity;
+	},
+    
+    _getIdentity: function() {
+		this._mediaServer.getIdentity(Lang.bind(this,
+		    this._setIdentity
+		));
+	},
 
     _setMetadata: function(sender, metadata) {
         if (metadata["xesam:artist"]) this._artist.text = metadata["xesam:artist"].toString();
-            else this._artist.text = _("Artist");
+            else this._artist.text = _("");
         if (metadata["xesam:album"]) this._album.text = metadata["xesam:album"].toString();
-            else this._album.text = _("Album");
+            else this._album.text = _("");
         if (metadata["xesam:title"]) this._title.text = metadata["xesam:title"].toString();
-            else this._title.text = _("Title");
+            else this._title.text = this._identity;
     },
 
     _getMetadata: function() {
@@ -1453,13 +1464,17 @@ MusicSource.prototype = {
     _setMetadata: function(sender, metadata) {
 		//Notification Title
 		var artist, album, title;
-        if (metadata["xesam:artist"]) artist = metadata["xesam:artist"].toString();
-            else artist = "Artist";
-        if (metadata["xesam:album"]) album = metadata["xesam:album"].toString();
-            else album = "Album";
+        if (metadata["xesam:artist"]) artist = "by " + metadata["xesam:artist"].toString();
+            else artist = "";
+        if (metadata["xesam:album"]) album = " from " + metadata["xesam:album"].toString();
+            else album = "";
         if (metadata["xesam:title"]) title = metadata["xesam:title"].toString();
-            else title = "Title";
-        MusicNotifications[this._owner].update(title,  "by " + artist + " from " + album, {
+            else title = this._identity;
+        if (metadata["xesam:artist"] == metadata["xesam:album"]) {
+			artist = metadata["xesam:artist"] ? "by " + metadata["xesam:artist"] : "";
+			album = "";
+		}
+        MusicNotifications[this._owner].update(title, artist + album, {
             customContent : true
         });
         
