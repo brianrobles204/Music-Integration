@@ -351,7 +351,7 @@ CoverArt.prototype = {
         
         this._trackOverlay.connect('clicked', 
             Lang.bind(this, function () { this._coverClick(); }));
-	this._toggleOverlay( this._overlay, styleprefix );
+	    this._toggleOverlay( this._overlay, styleprefix );
 
         this._status = "";
         this._getStatus();
@@ -621,17 +621,20 @@ MusicIntBox.prototype = {
         this._prop = new Prop(owner);
         this._appsys = Shell.AppSystem.get_default();
         this._appobj = this._appsys.lookup_app(this._name + ".desktop");
+        this._playerstate = true;
 
         //Actor that holds everything
-        this.actor = new St.BoxLayout({style_class: styleprefix + 'mib-track-box'});
+        this._holder = new St.BoxLayout({style_class: styleprefix + 'mib-track-box'});
+        this.actor = new St.Bin({style_class: styleprefix + 'mib-track-actor-holder', x_align: St.Align.MIDDLE})
+        this.actor.set_child(this._holder);
 
         //Track CoverArt
         this._trackCoverArt = new CoverArt(owner, coversize, overlay, styleprefix);
         //Holders
         this._trackInfoHolder = new St.Bin({style_class: styleprefix + 'mib-track-info-holder', y_align: St.Align.MIDDLE});
         this._trackControlHolder = new St.Bin({style_class: styleprefix + 'mib-track-control-holder', x_align: St.Align.MIDDLE});
-        this.actor.add_actor(this._trackCoverArt.getActor());
-        this.actor.add_actor(this._trackInfoHolder);
+        this._holder.add_actor(this._trackCoverArt.getActor());
+        this._holder.add_actor(this._trackInfoHolder);
 
         //Track Information
         this._infos = new St.BoxLayout({vertical: true, style_class: styleprefix + 'mib-track-info'});
@@ -641,6 +644,7 @@ MusicIntBox.prototype = {
         this._infos.add_actor(this._artist);
         this._album = new St.Label({text: _('Unknown Album')});
         this._infos.add_actor(this._album);
+        this._stopname = new St.Label({text: 'Rhythmbox', style_class: 'mib-track-stopname'});
         this._infos.add_actor(this._trackControlHolder);
         this._trackInfoHolder.set_child(this._infos);
 
@@ -710,17 +714,54 @@ MusicIntBox.prototype = {
         Main.overview.hide();
         Util.spawn(["python", preferences_path]);
     },
+    
+    _stopPlayer: function() {
+		if (this._playerstate) {
+	    	this._holder.remove_actor(this._trackCoverArt.getActor());
+		    this._infos.remove_actor(this._title);
+	    	this._infos.remove_actor(this._artist);
+    		this._infos.remove_actor(this._album);
+		    this.actor.add_style_pseudo_class('stopped');
+		    this._playerstate = false;
+	    }
+	},
+	
+	_startplayer: function() {
+		if(!this._playerstate) {
+		    this._holder.remove_actor(this._trackInfoHolder);
+	    	this._holder.add_actor(this._trackCoverArt.getActor());
+    		this._holder.add_actor(this._trackInfoHolder);
+		    this._infos.remove_actor(this._trackControlHolder);
+	    	this._infos.add_actor(this._title);
+    		this._infos.add_actor(this._artist);
+		    this._infos.add_actor(this._album);
+	    	this._infos.add_actor(this._trackControlHolder);
+    		this.actor.remove_style_pseudo_class('stopped');
+    		this._playerstate = true;
+	    }
+	},
 
     _setStatus: function(sender, status) {
         this._playerStatus = status;
         if (status == "Playing") {
+			global.log('play');
             this._playButton.setIcon("media-playback-pause");
+            this._startplayer();
+            Mainloop.source_remove(this._playerstatetime);
         }
         else if (status == "Paused") {
+			global.log('pause');
             this._playButton.setIcon("media-playback-start");
+            this._startplayer();
+            Mainloop.source_remove(this._playerstatetime);
         }
         else if (status == "Stopped") {
+			global.log('stop');
             this._playButton.setIcon("media-playback-start");
+            Mainloop.source_remove(this._playerstatetime);
+            this._playerstatetime = Mainloop.timeout_add(1000, Lang.bind(this, function () {
+				this._stopPlayer();
+			}));
         }
     },
 
@@ -1317,8 +1358,8 @@ MusicNotification.prototype = {
         this._appobj = this._appsys.lookup_app(this._name + ".desktop");
         
         MessageTray.Notification.prototype._init.call(this, source, title, banner, params);
-        this._table.width = 460;
-        this._mainHolder = new St.Bin({x_align: St.Align.START, style_class: "n-holder"});
+        this._table.width = 485;
+        this._mainHolder = new St.Bin({x_align: St.Align.MIDDLE, style_class: "n-holder"});
         this._mainMusicBox = new MusicIntBox(owner, 83, 20, false, "preferences", "n-");
         this._mainMusicBox._infos.width = 260;
         this._mainHolder.set_child(this._mainMusicBox.getActor());

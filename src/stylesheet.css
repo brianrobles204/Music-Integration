@@ -36,12 +36,14 @@
     padding-left: 10px;
     max-width: 250px;
 }
-.mib-track-title{
+.mib-track-title, .mib-track-stopname{
     font-weight: bold;
 }
-.mib-track-info-holder, .mib-n-track-info-holder, .mib-v-track-info-holder {
+.mib-track-stopname{
+    padding-top: 7px;
+}
+.mib-track-info-holder, .v-mib-track-info-holder, .n-mib-track-info-holder{
     padding-left: 10px;
-    color: white;
 }
 .mib-track-box, .n-mib-track-box, .v-mib-track-box {
     padding:17px;
@@ -49,6 +51,19 @@
     color: #ededed;
     text-shadow: rgba(0,0,0,0) 1px 1px 1px;
     border-radius: 4px;
+}
+.mib-track-box:stopped, 
+.n-mib-track-box:stopped, 
+.v-mib-track-box:stopped {
+    background-color: rgba(0,0,0,.6);
+}
+.mib-track-box:stopped .mib-track-info-holder, 
+.n-mib-track-box:stopped .n-mib-track-info-holder, 
+.v-mib-track-box:stopped  .v-mib-track-info-holder,
+.mib-track-box:stopped .mib-track-control-holder, 
+.n-mib-track-box:stopped .n-mib-track-control-holder, 
+.v-mib-track-box:stopped  .v-mib-track-control-holder{
+    padding:0;
 }
 .mib-track-info StLabel, .n-mib-track-info StLabel{
     padding-left: 5px;
