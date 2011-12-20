@@ -1435,20 +1435,9 @@ MusicSource.prototype = {
         this._propchange = this._prop.connect('PropertiesChanged', Lang.bind(this, function(sender, iface, value) {
 	        if (value["Metadata"]) {
 		   	        windowm = this._appobj.get_windows()[0];
-<<<<<<< HEAD
-<<<<<<< HEAD
 			    	    if (windowm) {
 							if (windowm.has_focus()) this._focusnotify = false;
 							else this._focusnotify = true;
-=======
-			    	    if (windowm.has_focus()) {
-							this._focusnotify = false;
->>>>>>> updated raise and focus mechanism
-=======
-			    	    if (windowm) {
-							if (windowm.has_focus()) this._focusnotify = false;
-							else this._focusnotify = true;
->>>>>>> fixed raise bugs for notifications
 						} else this._focusnotify = true;
 	            }
 	        if (value["Metadata"] && this._update) {
