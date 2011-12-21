@@ -1,0 +1,78 @@
+# Galician translations for gnome-shell-extension-music-integration package.
+# Copyright (C) 2011 THE gnome-shell-extension-music-integration'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the gnome-shell-extension-music-integration package.
+# Fran Dieguez <frandieguez@gnome.org>, 2011.
+#
+#: ../src/extension.js:787 ../src/extension.js:789
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-shell-extension-music-integration 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-12-21 03:14+0100\n"
+"PO-Revision-Date: 2011-12-21 04:09+0100\n"
+"Last-Translator: Fran Dieguez <frandieguez@gnome.org>\n"
+"Language-Team: Galician <gnome-l10n-gl@gnome.org>\n"
+"Language: gl_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#. Volume
+#: ../src/extension.js:963
+msgid "Music Volume"
+msgstr "Volumen de la música"
+
+#. Shuffle
+#: ../src/extension.js:970
+msgid "Shuffle"
+msgstr "Aleatorio"
+
+#. Repeat
+#: ../src/extension.js:978
+msgid "Repeat"
+msgstr "Repetir"
+
+#: ../src/extension.js:987 ../src/extension.js:1616
+msgid "Music Preferences"
+msgstr "Preferencias de la música"
+
+#: ../src/music-int-pref.py:28
+msgid "Music Integration Preferences"
+msgstr "Preferencias de la integración de música"
+
+#: ../src/music-int-pref.py:48
+msgid "Place Music as:"
+msgstr "Mostrar la música como:"
+
+#: ../src/music-int-pref.py:52
+msgid "Indicator in Right Panel"
+msgstr "Indicador a la izquierda del panel"
+
+#: ../src/music-int-pref.py:53
+msgid "Indicator in Center Panel"
+msgstr "Indicador en el centro del panel"
+
+#: ../src/music-int-pref.py:54
+msgid "Part of the Volume Menu"
+msgstr "Parte del menú de volumen"
+
+#: ../src/music-int-pref.py:55
+msgid "Don't show in Panel"
+msgstr "No mostrar en el panel"
+
+#: ../src/music-int-pref.py:66
+msgid "Notifications"
+msgstr "Notificaciones"
+
+#: ../src/music-int-pref.py:76
+msgid "Song name in the panel"
+msgstr "Mostrar nombre de la canción en el panel"
+
+#: ../src/music-int-pref.py:86
+msgid "Time over cover art"
+msgstr "Mostrar el tiempo de reproducción sobre la carátula"
+
+#: ../src/music-int-pref.py:97
+msgid "Quit"
+msgstr "Salir"
