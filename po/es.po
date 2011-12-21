@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: gnome-shell-extension-music-integration 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-12-21 03:14+0100\n"
-"PO-Revision-Date: 2011-12-21 03:17+0100\n"
+"PO-Revision-Date: 2011-12-21 04:09+0100\n"
 "Last-Translator: Fran Dieguez <frandieguez@gnome.org>\n"
 "Language-Team: Galician <gnome-l10n-gl@gnome.org>\n"
 "Language: gl_ES\n"
@@ -21,7 +21,7 @@ msgstr ""
 #. Volume
 #: ../src/extension.js:963
 msgid "Music Volume"
-msgstr "Volume da música"
+msgstr "Volumen de la música"
 
 #. Shuffle
 #: ../src/extension.js:970
@@ -35,65 +35,44 @@ msgstr "Repetir"
 
 #: ../src/extension.js:987 ../src/extension.js:1616
 msgid "Music Preferences"
-msgstr "Preferencias da música"
+msgstr "Preferencias de la música"
 
 #: ../src/music-int-pref.py:28
 msgid "Music Integration Preferences"
-msgstr "Preferencias da integración de música"
+msgstr "Preferencias de la integración de música"
 
 #: ../src/music-int-pref.py:48
 msgid "Place Music as:"
-msgstr "Dispor o indicador como:"
+msgstr "Mostrar la música como:"
 
 #: ../src/music-int-pref.py:52
 msgid "Indicator in Right Panel"
-msgstr "Indicador á dereita do panel"
+msgstr "Indicador a la izquierda del panel"
 
 #: ../src/music-int-pref.py:53
 msgid "Indicator in Center Panel"
-msgstr "Indicador no centro do panel"
+msgstr "Indicador en el centro del panel"
 
 #: ../src/music-int-pref.py:54
 msgid "Part of the Volume Menu"
-msgstr "Parte do menú de volume"
+msgstr "Parte del menú de volumen"
 
 #: ../src/music-int-pref.py:55
 msgid "Don't show in Panel"
-msgstr "Non mostrar no panel"
+msgstr "No mostrar en el panel"
 
 #: ../src/music-int-pref.py:66
 msgid "Notifications"
-msgstr "Notificacións"
+msgstr "Notificaciones"
 
 #: ../src/music-int-pref.py:76
 msgid "Song name in the panel"
-msgstr "Mostrar o nome da canción no panel"
+msgstr "Mostrar nombre de la canción en el panel"
 
 #: ../src/music-int-pref.py:86
 msgid "Time over cover art"
-msgstr "Mostrar tempo de reprodución sobre a carátula"
+msgstr "Mostrar el tiempo de reproducción sobre la carátula"
 
 #: ../src/music-int-pref.py:97
 msgid "Quit"
-msgstr "Saír"
-
-#~ msgid "Artist"
-#~ msgstr "Artista"
-
-#~ msgid "Album"
-#~ msgstr "Álbum"
-
-#~ msgid "Title"
-#~ msgstr "Título"
-
-#~ msgid "Choose a setup :"
-#~ msgstr "Seleccione unha configuración:"
-
-#~ msgid "Show notifications"
-#~ msgstr "Mostrar notificacións"
-
-#~ msgid "Choose your default setup :"
-#~ msgstr "Seleccione a configuración predeterminada:"
-
-#~ msgid "Cover Art Time Overlay"
-#~ msgstr "Mostrar o tempo sobre a carátula"
+msgstr "Salir"
