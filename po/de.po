@@ -1,0 +1,78 @@
+# Galician translations for gnome-shell-extension-music-integration package.
+# Copyright (C) 2011 THE gnome-shell-extension-music-integration'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the gnome-shell-extension-music-integration package.
+# Frederik Hahne <frederik.hahne@googlemail.com>, 2012.
+#
+#: ../src/extension.js:787 ../src/extension.js:789
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-shell-extension-music-integration 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-12-21 03:14+0100\n"
+"PO-Revision-Date: 2012-02-26 21:31+0100\n"
+"Last-Translator: Frederik Hahne <frederik.hahne@googlemail.com>\n"
+"Language-Team: \n"
+"Language: DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#. Volume
+#: ../src/extension.js:963
+msgid "Music Volume"
+msgstr "Musiklautstärke"
+
+#. Shuffle
+#: ../src/extension.js:970
+msgid "Shuffle"
+msgstr "Zufallswiedergabe"
+
+#. Repeat
+#: ../src/extension.js:978
+msgid "Repeat"
+msgstr "Wiederholen"
+
+#: ../src/extension.js:987 ../src/extension.js:1616
+msgid "Music Preferences"
+msgstr "Einstellungen für Musik"
+
+#: ../src/music-int-pref.py:28
+msgid "Music Integration Preferences"
+msgstr "Einstellungen für Musik Integration"
+
+#: ../src/music-int-pref.py:48
+msgid "Place Music as:"
+msgstr "Musik platzieren als:"
+
+#: ../src/music-int-pref.py:52
+msgid "Indicator in Right Panel"
+msgstr "Symbol rechts"
+
+#: ../src/music-int-pref.py:53
+msgid "Indicator in Center Panel"
+msgstr "Symbol in der Mitte"
+
+#: ../src/music-int-pref.py:54
+msgid "Part of the Volume Menu"
+msgstr "Im Lautstärkemenu integriert"
+
+#: ../src/music-int-pref.py:55
+msgid "Don't show in Panel"
+msgstr "Nicht im Panel anzeigen"
+
+#: ../src/music-int-pref.py:66
+msgid "Notifications"
+msgstr "Hinweise"
+
+#: ../src/music-int-pref.py:76
+msgid "Song name in the panel"
+msgstr "Liedtitel im Panel"
+
+#: ../src/music-int-pref.py:86
+msgid "Time over cover art"
+msgstr "Zeit über dem Albumcover anzeigen"
+
+#: ../src/music-int-pref.py:97
+msgid "Quit"
+msgstr "Beenden"
