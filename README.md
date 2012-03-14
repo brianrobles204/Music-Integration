@@ -21,6 +21,7 @@ Tested Players:
 * Quodlibet - with DBus Mpris plugin
 * Rhythmbox - with DBus Mpris plugin
 * Xnoise
+* VLC
 
 Other Supported Players (may be untested or partially supported):
 
